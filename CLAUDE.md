@@ -29,13 +29,17 @@ src/tabularium/
 ├── models.py            # shared dataclasses (CodeSource, LookupResult)
 ├── np122/
 │   ├── __init__.py
-│   └── indicative_shear_strength.py   # Tabelul A.6.2 — φ', c' pentru pământuri coezive
+│   ├── indicative_shear_strength.py              # Tabelul A.6.2 — φ', c' pentru pământuri coezive
+│   ├── indicative_deformation_modulus_non_cohesive.py  # Tabelul A.6.3 — E pentru pământuri nisipoase
+│   └── indicative_deformation_modulus_cohesive.py      # Tabelul A.6.4 — E pentru pământuri coezive
 ├── np112/
 │   └── __init__.py
 tests/
 ├── test_models.py
 ├── test_interpolation.py
 ├── test_np122_indicative_shear_strength.py
+├── test_np122_indicative_deformation_modulus_non_cohesive.py
+├── test_np122_indicative_deformation_modulus_cohesive.py
 └── test_registry.py
 ```
 
