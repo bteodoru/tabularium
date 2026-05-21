@@ -22,19 +22,21 @@ Romanian geotechnical codes (NP 122, NP 112 etc.) contain numerous tables with n
 ## Package structure
 
 ```
-tabularium/
+src/tabularium/
 ├── __init__.py
 ├── registry.py          # central index of all available tables
 ├── interpolation.py     # shared interpolation utilities (linear, bilinear)
-├── models.py            # shared dataclasses (TableResult, LookupInput, etc.)
+├── models.py            # shared dataclasses (CodeSource, LookupResult)
 ├── np122/
 │   ├── __init__.py
-│   └── shear_strength.py   # first table to implement (see below)
+│   └── indicative_shear_strength.py   # Tabelul A.6.2 — φ', c' pentru pământuri coezive
 ├── np112/
 │   └── __init__.py
-└── tests/
-    ├── test_np122_shear_strength.py
-    └── ...
+tests/
+├── test_models.py
+├── test_interpolation.py
+├── test_np122_indicative_shear_strength.py
+└── test_registry.py
 ```
 
 ## Design principles
@@ -44,4 +46,15 @@ tabularium/
 - All table data lives as Python data structures (dicts, dataclasses), not in any DB or file format
 - Every public function must have type hints
 - Every table module must have a corresponding test file with at minimum: exact lookup (no interpolation), interpolated lookup, out-of-range input handling
-- `registry.py` should expose a unified interface to discover available tables across normatives
+- `registry.py` exposes a unified interface to discover available tables across normatives
+- Opifer tool wrappers live in Opifer, not in tabularium — tabularium exposes only lookup functions and result models
+
+## Result model pattern
+
+Each table module defines a `*Result` dataclass that extends `LookupResult` (from `models.py`) with table-specific fields. `LookupResult` provides the common infrastructure: `valid`, `interpolated`, `source` (a structured `CodeSource`), `warnings`, `errors`.
+
+## Naming conventions
+
+- Table modules named by content, not by normative indicator: `indicative_shear_strength.py` not `A_6_2.py`
+- Normative indicator goes in the module docstring and in the registry entry
+- Registry keys: `"np122.indicative_shear_strength"` (normative prefix + content name)
