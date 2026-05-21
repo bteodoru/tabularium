@@ -1,9 +1,6 @@
 import pytest
 from tabularium.registry import REGISTRY, TableEntry, get_table, list_tables
-from tabularium.np_122_2010.indicative_deformation_modulus_non_cohesive import (
-    RelativeDensity,
-    SoilCategory,
-)
+from tabularium.models import RelativeDensity, SoilCategory
 
 
 def test_list_tables_contains_shear_strength():

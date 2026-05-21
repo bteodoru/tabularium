@@ -1,23 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import Enum
 
-from ..models import CodeSource, LookupResult
+from ..models import CodeSource, LookupResult, RelativeDensity, SoilCategory
 
 _SOURCE = CodeSource(code="NP 122:2010", table="Tabelul A.6.1")
-
-
-class SoilCategory(str, Enum):
-    GRAVEL_COARSE_SAND = "gravel_coarse_sand"   # Nisip cu pietriș și nisip mare
-    MEDIUM_SAND        = "medium_sand"           # Nisip mijlociu
-    FINE_SAND          = "fine_sand"             # Nisip fin
-    SILTY_SAND         = "silty_sand"            # Nisip prăfos
-
-
-class RelativeDensity(str, Enum):
-    MEDIUM = "medium"  # I_D = 35…65%
-    DENSE  = "dense"   # I_D > 65%
 
 
 @dataclass
