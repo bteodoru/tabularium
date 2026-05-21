@@ -8,7 +8,7 @@ from tabularium.np_122_2010.indicative_deformation_modulus_non_cohesive import (
 
 def test_list_tables_contains_shear_strength():
     tables = list_tables()
-    assert "np_122_2010.indicative_shear_strength" in tables
+    assert "np_122_2010.indicative_shear_strength_cohesive" in tables
 
 
 def test_list_tables_returns_list_of_strings():
@@ -18,7 +18,7 @@ def test_list_tables_returns_list_of_strings():
 
 
 def test_get_table_returns_entry():
-    entry = get_table("np_122_2010.indicative_shear_strength")
+    entry = get_table("np_122_2010.indicative_shear_strength_cohesive")
     assert isinstance(entry, TableEntry)
     assert entry.normative == "NP 122:2010"
     assert entry.table_id == "A.6.2"
@@ -26,7 +26,7 @@ def test_get_table_returns_entry():
 
 
 def test_get_table_lookup_fn_works():
-    entry = get_table("np_122_2010.indicative_shear_strength")
+    entry = get_table("np_122_2010.indicative_shear_strength_cohesive")
     r = entry.lookup_fn(ip=15.0, ic=0.60, e=0.55)
     assert r.valid is True
 
