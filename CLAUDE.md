@@ -58,3 +58,15 @@ Each table module defines a `*Result` dataclass that extends `LookupResult` (fro
 - Table modules named by content, not by normative indicator: `indicative_shear_strength.py` not `A_6_2.py`
 - Normative indicator goes in the module docstring and in the registry entry
 - Registry keys: `"np122.indicative_shear_strength"` (normative prefix + content name)
+
+## Adăugare tabel nou
+
+1. Creează `src/tabularium/<normativ>/<content_name>.py`
+   - Definește `*Result(LookupResult)` cu câmpurile specifice tabelului
+   - Implementează funcția publică de lookup cu type hints complete
+   - Hardcodează `_SOURCE = CodeSource(code=..., table=...)`
+   - Folosește `interpolate_linear` din `interpolation.py` pentru interpolare pe axe continue
+2. Creează `tests/test_<normativ>_<content_name>.py`
+   - Acoperă: lookup exact, lookup interpolat, out-of-range, frontiere de categorie
+3. Adaugă intrarea în `src/tabularium/registry.py` → `REGISTRY`
+4. Actualizează secțiunea "Package structure" din acest fișier
