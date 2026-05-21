@@ -56,3 +56,17 @@ def test_source_metadata():
 def test_result_type():
     r = get_deformation_modulus(SoilCategory.SILTY_SAND, RelativeDensity.DENSE)
     assert isinstance(r, DeformationModulusNonCohesiveResult)
+
+
+# ── Error cases ───────────────────────────────────────────────────────────────
+
+def test_invalid_soil_category():
+    r = get_deformation_modulus("invalid_category", RelativeDensity.MEDIUM)
+    assert r.valid is False
+    assert len(r.errors) == 1
+
+
+def test_invalid_relative_density():
+    r = get_deformation_modulus(SoilCategory.FINE_SAND, "invalid_density")
+    assert r.valid is False
+    assert len(r.errors) == 1
