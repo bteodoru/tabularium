@@ -1,6 +1,6 @@
 import pytest
 from tabularium.registry import REGISTRY, TableEntry, get_table, list_tables
-from tabularium.models import RelativeDensity, SoilCategory
+from tabularium.enums import RelativeDensity, SoilCategory
 
 
 def test_list_tables_contains_shear_strength():
