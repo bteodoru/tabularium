@@ -1,5 +1,5 @@
 import pytest
-from tabularium.np122.indicative_deformation_modulus_cohesive import (
+from tabularium.np_122_2010.indicative_deformation_modulus_cohesive import (
     DeformationModulusCohesiveResult,
     get_deformation_modulus,
 )

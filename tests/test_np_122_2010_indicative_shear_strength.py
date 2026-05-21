@@ -1,5 +1,5 @@
 import pytest
-from tabularium.np122.indicative_shear_strength import ShearStrengthResult, get_phi_c
+from tabularium.np_122_2010.indicative_shear_strength import ShearStrengthResult, get_phi_c
 
 
 # ── Lookup exact ──────────────────────────────────────────────────────────────

@@ -4,11 +4,11 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from .models import LookupResult
-from .np122.indicative_shear_strength import get_phi_c as _np122_shear
-from .np122.indicative_deformation_modulus_non_cohesive import (
+from .np_122_2010.indicative_shear_strength import get_phi_c as _np122_shear
+from .np_122_2010.indicative_deformation_modulus_non_cohesive import (
     get_deformation_modulus as _np122_deformation_non_cohesive,
 )
-from .np122.indicative_deformation_modulus_cohesive import (
+from .np_122_2010.indicative_deformation_modulus_cohesive import (
     get_deformation_modulus as _np122_deformation_cohesive,
 )
 
@@ -22,19 +22,19 @@ class TableEntry:
 
 
 REGISTRY: dict[str, TableEntry] = {
-    "np122.indicative_shear_strength": TableEntry(
+    "np_122_2010.indicative_shear_strength": TableEntry(
         normative="NP 122:2010",
         table_id="A.6.2",
         description="Valori orientative φ', c' pentru pământuri coezive (S_r > 0,8)",
         lookup_fn=_np122_shear,
     ),
-    "np122.indicative_deformation_modulus_non_cohesive": TableEntry(
+    "np_122_2010.indicative_deformation_modulus_non_cohesive": TableEntry(
         normative="NP 122:2010",
         table_id="A.6.3",
         description="Valori caracteristice E (kPa) pentru pământuri nisipoase",
         lookup_fn=_np122_deformation_non_cohesive,
     ),
-    "np122.indicative_deformation_modulus_cohesive": TableEntry(
+    "np_122_2010.indicative_deformation_modulus_cohesive": TableEntry(
         normative="NP 122:2010",
         table_id="A.6.4",
         description="Valori caracteristice E (kPa) pentru pământuri coezive",

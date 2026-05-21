@@ -27,19 +27,19 @@ src/tabularium/
 ├── registry.py          # central index of all available tables
 ├── interpolation.py     # shared interpolation utilities (linear, bilinear)
 ├── models.py            # shared dataclasses (CodeSource, LookupResult)
-├── np122/
+├── np_122_2010/
 │   ├── __init__.py
 │   ├── indicative_shear_strength.py              # Tabelul A.6.2 — φ', c' pentru pământuri coezive
 │   ├── indicative_deformation_modulus_non_cohesive.py  # Tabelul A.6.3 — E pentru pământuri nisipoase
 │   └── indicative_deformation_modulus_cohesive.py      # Tabelul A.6.4 — E pentru pământuri coezive
-├── np112/
+├── np_112_2014/
 │   └── __init__.py
 tests/
 ├── test_models.py
 ├── test_interpolation.py
-├── test_np122_indicative_shear_strength.py
-├── test_np122_indicative_deformation_modulus_non_cohesive.py
-├── test_np122_indicative_deformation_modulus_cohesive.py
+├── test_np_122_2010_indicative_shear_strength.py
+├── test_np_122_2010_indicative_deformation_modulus_non_cohesive.py
+├── test_np_122_2010_indicative_deformation_modulus_cohesive.py
 └── test_registry.py
 ```
 
@@ -61,16 +61,17 @@ Each table module defines a `*Result` dataclass that extends `LookupResult` (fro
 
 - Table modules named by content, not by normative indicator: `indicative_shear_strength.py` not `A_6_2.py`
 - Normative indicator goes in the module docstring and in the registry entry
-- Registry keys: `"np122.indicative_shear_strength"` (normative prefix + content name)
+- Normative folder names include edition year: `np_122_2010/`, `np_112_2014/` — format `np_<number>_<year>`
+- Registry keys: `"np_122_2010.indicative_shear_strength"` (normative prefix + content name)
 
 ## Adăugare tabel nou
 
-1. Creează `src/tabularium/<normativ>/<content_name>.py`
+1. Creează `src/tabularium/<np_XXX_YYYY>/<content_name>.py`
    - Definește `*Result(LookupResult)` cu câmpurile specifice tabelului
    - Implementează funcția publică de lookup cu type hints complete
    - Hardcodează `_SOURCE = CodeSource(code=..., table=...)`
    - Folosește `interpolate_linear` din `interpolation.py` pentru interpolare pe axe continue
-2. Creează `tests/test_<normativ>_<content_name>.py`
+2. Creează `tests/test_<np_XXX_YYYY>_<content_name>.py`
    - Acoperă: lookup exact, lookup interpolat, out-of-range, frontiere de categorie
 3. Adaugă intrarea în `src/tabularium/registry.py` → `REGISTRY`
 4. Actualizează secțiunea "Package structure" din acest fișier
