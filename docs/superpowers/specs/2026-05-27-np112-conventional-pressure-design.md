@@ -63,10 +63,9 @@ COARSE_SAND          = "coarse_sand"           # Nisip mare
 
 ```python
 class MoistureCondition(str, Enum):
-    DRY_OR_MOIST         = "dry_or_moist"           # uscat sau umed
+    DRY                  = "dry"                    # uscat
+    MOIST                = "moist"                  # umed
     VERY_MOIST_SATURATED = "very_moist_saturated"   # foarte umed sau saturat
-    DRY                  = "dry"                    # uscat (nisip fin prăfos)
-    MOIST                = "moist"                  # umed (nisip fin prăfos)
 
 class PlasticityClass(str, Enum):
     LOW    = "low"    # I_P ≤ 10%
@@ -143,14 +142,15 @@ def get_p_conv(
 
 - Toate valorile fixe, fără interpolare.
 - `moisture_condition` relevant doar pentru `FINE_SAND` și `SILTY_SAND`; pentru `COARSE_SAND` și `MEDIUM_SAND` orice `MoistureCondition` e acceptat — tabelul are un singur rând per categorie, deci moisture nu influențează valoarea.
-- `FINE_SAND` acceptă `DRY_OR_MOIST`, `DRY` și `MOIST` ca echivalente (rutare la același rând "uscat sau umed") — evită ambiguitatea când utilizatorul nu știe că tabelul combină cele două stări. `FINE_SAND` + `VERY_MOIST_SATURATED` → al doilea rând.
+- Rândul "uscat sau umed" din tabelul D.3 pentru `FINE_SAND` e reprezentat ca două rânduri distincte (`DRY` și `MOIST`) cu aceleași valori — evită aliasing în implementare.
 - Combinație `(soil_category, moisture_condition)` inexistentă în tabel (e.g. `SILTY_SAND` + `DRY_OR_MOIST`) → `errors`, `valid=False`.
 
 | `soil_category` | `moisture_condition` | `DENSE` | `MEDIUM` |
 |---|---|---|---|
 | `COARSE_SAND` | — | 700 | 600 |
 | `MEDIUM_SAND` | — | 600 | 500 |
-| `FINE_SAND` | `DRY_OR_MOIST` | 500 | 350 |
+| `FINE_SAND` | `DRY` | 500 | 350 |
+| `FINE_SAND` | `MOIST` | 500 | 350 |
 | `FINE_SAND` | `VERY_MOIST_SATURATED` | 350 | 250 |
 | `SILTY_SAND` | `DRY` | 350 | 300 |
 | `SILTY_SAND` | `MOIST` | 250 | 200 |
