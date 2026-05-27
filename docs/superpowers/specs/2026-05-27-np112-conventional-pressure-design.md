@@ -63,9 +63,10 @@ COARSE_SAND          = "coarse_sand"           # Nisip mare
 
 ```python
 class MoistureCondition(str, Enum):
-    DRY                  = "dry"                    # uscat
-    MOIST                = "moist"                  # umed
-    VERY_MOIST_SATURATED = "very_moist_saturated"   # foarte umed sau saturat
+    DRY        = "dry"         # uscat
+    MOIST      = "moist"       # umed
+    VERY_MOIST = "very_moist"  # foarte umed
+    SATURATED  = "saturated"   # saturat
 
 class PlasticityClass(str, Enum):
     LOW    = "low"    # I_P ≤ 10%
@@ -151,10 +152,12 @@ def get_p_conv(
 | `MEDIUM_SAND` | — | 600 | 500 |
 | `FINE_SAND` | `DRY` | 500 | 350 |
 | `FINE_SAND` | `MOIST` | 500 | 350 |
-| `FINE_SAND` | `VERY_MOIST_SATURATED` | 350 | 250 |
+| `FINE_SAND` | `VERY_MOIST` | 350 | 250 |
+| `FINE_SAND` | `SATURATED` | 350 | 250 |
 | `SILTY_SAND` | `DRY` | 350 | 300 |
 | `SILTY_SAND` | `MOIST` | 250 | 200 |
-| `SILTY_SAND` | `VERY_MOIST_SATURATED` | 200 | 150 |
+| `SILTY_SAND` | `VERY_MOIST` | 200 | 150 |
+| `SILTY_SAND` | `SATURATED` | 200 | 150 |
 
 ### `conventional_pressure_fines.py` — Tabelul D.4
 
