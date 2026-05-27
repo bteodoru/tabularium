@@ -4,7 +4,7 @@
 
 **Goal:** Implement tabelele D.1–D.5 din NP 112:2014 Anexa D ca 6 module în `src/tabularium/np_112_2014/`, cu lookup + interpolare și result type comun.
 
-**Architecture:** Shared `ConventionalPressureResult(LookupResult)` in `np_112_2014/__init__.py`. Enums extinse în `enums.py`. `interpolate_bilinear` adăugat în `interpolation.py`. Fiecare tabel e un modul separat cu `_SOURCE`, `_TABLE`, și `get_p_conv()`.
+**Architecture:** Shared `ConventionalPressureResult(LookupResult)` in `np_112_2014/__init__.py`. Enums extinse în `enums.py`. D.4 folosește două apeluri succesive `interpolate_linear` (existent) pe axele `e` și `I_C` — nu e nevoie de o funcție nouă. Fiecare tabel e un modul separat cu `_SOURCE`, `_TABLE`, și `get_p_conv()`.
 
 **Tech Stack:** Python 3.10+, stdlib `dataclasses`, `bisect`. Test runner: `pytest`.
 
@@ -15,7 +15,6 @@
 | Action | Path |
 |---|---|
 | Modify | `src/tabularium/enums.py` |
-| Modify | `src/tabularium/interpolation.py` |
 | Modify | `src/tabularium/np_112_2014/__init__.py` |
 | Create | `src/tabularium/np_112_2014/conventional_pressure_rocks.py` |
 | Create | `src/tabularium/np_112_2014/conventional_pressure_boulders.py` |
@@ -25,7 +24,6 @@
 | Create | `src/tabularium/np_112_2014/conventional_pressure_fills.py` |
 | Modify | `src/tabularium/registry.py` |
 | Modify | `CLAUDE.md` |
-| Modify | `tests/test_interpolation.py` |
 | Create | `tests/test_np_112_2014_conventional_pressure_rocks.py` |
 | Create | `tests/test_np_112_2014_conventional_pressure_boulders.py` |
 | Create | `tests/test_np_112_2014_conventional_pressure_gravels.py` |
@@ -122,221 +120,12 @@ git commit -m "feat(enums): add SoilCategory entries and new enums for NP 112:20
 
 ---
 
-## Task 2: `ConventionalPressureResult` și `interpolate_bilinear`
+## Task 2: `ConventionalPressureResult`
 
 **Files:**
 - Modify: `src/tabularium/np_112_2014/__init__.py`
-- Modify: `src/tabularium/interpolation.py`
-- Modify: `tests/test_interpolation.py`
 
-- [ ] **Step 1: Write failing tests pentru `interpolate_bilinear`**
-
-Actualizează linia de import din vârful `tests/test_interpolation.py`:
-
-```python
-from tabularium.interpolation import BilinearResult, LinearResult, interpolate_bilinear, interpolate_linear
-```
-
-Adaugă la sfârșitul aceluiași fișier:
-
-```python
-
-
-# ── interpolate_bilinear ──────────────────────────────────────────────────────
-
-def test_bilinear_exact_node():
-    # grid[x][y] = value; exact match on both axes
-    grid = {
-        0.5: {0.5: 300.0, 0.75: 325.0},
-        0.7: {0.5: 275.0, 0.75: 285.0},
-    }
-    r = interpolate_bilinear(grid, x=0.5, y=0.5)
-    assert r.value == pytest.approx(300.0)
-    assert r.interpolated is False
-    assert r.warnings == []
-
-
-def test_bilinear_interpolate_y_only():
-    # x exact, y between knots: 0.5*(300+325)/2 not right — linear on y
-    # y=0.625 is midpoint of [0.5, 0.75] → (300+325)/2 = 312.5
-    grid = {
-        0.5: {0.5: 300.0, 0.75: 325.0},
-        0.7: {0.5: 275.0, 0.75: 285.0},
-    }
-    r = interpolate_bilinear(grid, x=0.5, y=0.625)
-    assert r.value == pytest.approx(312.5)
-    assert r.interpolated is True
-    assert r.warnings == []
-
-
-def test_bilinear_interpolate_x_only():
-    # y exact, x between knots
-    # x=0.6 is midpoint of [0.5, 0.7], y=0.5 exact
-    # → (300+275)/2 = 287.5
-    grid = {
-        0.5: {0.5: 300.0, 0.75: 325.0},
-        0.7: {0.5: 275.0, 0.75: 285.0},
-    }
-    r = interpolate_bilinear(grid, x=0.6, y=0.5)
-    assert r.value == pytest.approx(287.5)
-    assert r.interpolated is True
-
-
-def test_bilinear_interpolate_both_axes():
-    # x=0.6 (midpoint [0.5,0.7]), y=0.625 (midpoint [0.5,0.75])
-    # At x=0.5, y=0.625 → 312.5
-    # At x=0.7, y=0.625 → (275+285)/2 = 280.0
-    # At x=0.6 → (312.5+280.0)/2 = 296.25
-    grid = {
-        0.5: {0.5: 300.0, 0.75: 325.0},
-        0.7: {0.5: 275.0, 0.75: 285.0},
-    }
-    r = interpolate_bilinear(grid, x=0.6, y=0.625)
-    assert r.value == pytest.approx(296.25)
-    assert r.interpolated is True
-
-
-def test_bilinear_x_below_range():
-    grid = {
-        0.5: {0.5: 300.0, 0.75: 325.0},
-        0.7: {0.5: 275.0, 0.75: 285.0},
-    }
-    r = interpolate_bilinear(grid, x=0.3, y=0.6)
-    assert r.value is None
-    assert len(r.warnings) == 1
-    assert "0.5" in r.warnings[0]
-
-
-def test_bilinear_x_above_range():
-    grid = {
-        0.5: {0.5: 300.0, 0.75: 325.0},
-        0.7: {0.5: 275.0, 0.75: 285.0},
-    }
-    r = interpolate_bilinear(grid, x=0.9, y=0.6)
-    assert r.value is None
-    assert len(r.warnings) == 1
-
-
-def test_bilinear_y_below_range():
-    grid = {
-        0.5: {0.5: 300.0, 0.75: 325.0},
-        0.7: {0.5: 275.0, 0.75: 285.0},
-    }
-    r = interpolate_bilinear(grid, x=0.6, y=0.3)
-    assert r.value is None
-    assert len(r.warnings) == 1
-
-
-def test_bilinear_result_type():
-    grid = {0.5: {0.5: 300.0, 0.75: 325.0}, 0.7: {0.5: 275.0, 0.75: 285.0}}
-    r = interpolate_bilinear(grid, x=0.5, y=0.5)
-    assert isinstance(r, BilinearResult)
-```
-
-- [ ] **Step 2: Run tests to verify they fail**
-
-```
-pytest tests/test_interpolation.py -v -k "bilinear"
-```
-
-Expected: FAIL with `ImportError: cannot import name 'BilinearResult'`
-
-- [ ] **Step 3: Implement `BilinearResult` și `interpolate_bilinear` în `interpolation.py`**
-
-Adaugă după clasa `LinearResult` și `interpolate_linear` la sfârșitul fișierului `src/tabularium/interpolation.py`:
-
-```python
-
-@dataclass
-class BilinearResult:
-    value: float | None
-    interpolated: bool
-    warnings: list[str] = field(default_factory=list)
-
-
-def interpolate_bilinear(
-    grid: dict[float, dict[float, float]],
-    x: float,
-    y: float,
-) -> BilinearResult:
-    """
-    Interpolare biliniară pe o grilă rectangulară grid[x][y] = value.
-    Fără extrapolate pe nicio axă.
-    """
-    x_vals = sorted(grid)
-
-    if x < x_vals[0] - 1e-9:
-        return BilinearResult(
-            value=None, interpolated=False,
-            warnings=[
-                f"x = {x} < x_min tabelat ({x_vals[0]}). "
-                "Extrapolarea nu este permisă."
-            ],
-        )
-    if x > x_vals[-1] + 1e-9:
-        return BilinearResult(
-            value=None, interpolated=False,
-            warnings=[
-                f"x = {x} > x_max tabelat ({x_vals[-1]}). "
-                "Extrapolarea nu este permisă."
-            ],
-        )
-
-    y_ref = sorted(grid[x_vals[0]])
-    if y < y_ref[0] - 1e-9:
-        return BilinearResult(
-            value=None, interpolated=False,
-            warnings=[
-                f"y = {y} < y_min tabelat ({y_ref[0]}). "
-                "Extrapolarea nu este permisă."
-            ],
-        )
-    if y > y_ref[-1] + 1e-9:
-        return BilinearResult(
-            value=None, interpolated=False,
-            warnings=[
-                f"y = {y} > y_max tabelat ({y_ref[-1]}). "
-                "Extrapolarea nu este permisă."
-            ],
-        )
-
-    for xv in x_vals:
-        if abs(x - xv) < 1e-9:
-            lr = interpolate_linear(grid[xv], y)
-            return BilinearResult(
-                value=lr.value,
-                interpolated=lr.interpolated,
-                warnings=lr.warnings,
-            )
-
-    idx = bisect.bisect_left(x_vals, x)
-    x0, x1 = x_vals[idx - 1], x_vals[idx]
-
-    lr0 = interpolate_linear(grid[x0], y)
-    lr1 = interpolate_linear(grid[x1], y)
-
-    if lr0.value is None or lr1.value is None:
-        return BilinearResult(
-            value=None, interpolated=False,
-            warnings=lr0.warnings + lr1.warnings,
-        )
-
-    t = (x - x0) / (x1 - x0)
-    return BilinearResult(
-        value=lr0.value + t * (lr1.value - lr0.value),
-        interpolated=True,
-    )
-```
-
-- [ ] **Step 4: Run bilinear tests**
-
-```
-pytest tests/test_interpolation.py -v
-```
-
-Expected: all tests PASS.
-
-- [ ] **Step 5: Add `ConventionalPressureResult` în `np_112_2014/__init__.py`**
+- [ ] **Step 1: Add `ConventionalPressureResult` în `np_112_2014/__init__.py`**
 
 Înlocuiește conținutul fișierului `src/tabularium/np_112_2014/__init__.py`:
 
@@ -358,11 +147,19 @@ class ConventionalPressureResult(LookupResult):
         return self.p_conv is not None
 ```
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 2: Verifică testele existente**
+
+```
+pytest tests/ -v
+```
+
+Expected: toate testele existente PASS (nicio modificare la NP 122).
+
+- [ ] **Step 3: Commit**
 
 ```bash
-git add src/tabularium/interpolation.py src/tabularium/np_112_2014/__init__.py tests/test_interpolation.py
-git commit -m "feat: add interpolate_bilinear and ConventionalPressureResult"
+git add src/tabularium/np_112_2014/__init__.py
+git commit -m "feat(np112): add ConventionalPressureResult"
 ```
 
 ---
@@ -1367,14 +1164,16 @@ Creează `src/tabularium/np_112_2014/conventional_pressure_fines.py`:
 ```python
 from __future__ import annotations
 
+import bisect
+
 from ..enums import PlasticityClass
-from ..interpolation import interpolate_bilinear
+from ..interpolation import interpolate_linear
 from ..models import CodeSource
 from . import ConventionalPressureResult
 
 _SOURCE = CodeSource(code="NP 112:2014", table="Tabelul D.4")
 
-# grid[e][I_C] = p_conv
+# _SubGrid[e][I_C] = p_conv
 _SubGrid = dict[float, dict[float, float]]
 
 # _TABLE[PlasticityClass]["lower" | "upper"][e][I_C] = p_conv
@@ -1429,6 +1228,30 @@ _IC_MAX = 1.0
 _IC_BAND_BOUNDARY = 0.75
 
 
+def _interpolate_successive(grid: _SubGrid, e: float, ic: float) -> tuple[float | None, bool]:
+    """Interpolare succesivă: întâi pe I_C la fiecare nod e, apoi pe e."""
+    e_vals = sorted(grid)
+
+    # Exact match pe e → interpolare liniară pe I_C
+    for ev in e_vals:
+        if abs(e - ev) < 1e-9:
+            lr = interpolate_linear(grid[ev], ic)
+            return lr.value, lr.interpolated
+
+    # Bracket pe e
+    idx = bisect.bisect_left(e_vals, e)
+    e0, e1 = e_vals[idx - 1], e_vals[idx]
+
+    lr0 = interpolate_linear(grid[e0], ic)
+    lr1 = interpolate_linear(grid[e1], ic)
+
+    if lr0.value is None or lr1.value is None:
+        return None, False
+
+    t = (e - e0) / (e1 - e0)
+    return lr0.value + t * (lr1.value - lr0.value), True
+
+
 def get_p_conv(
     plasticity_class: PlasticityClass,
     void_ratio: float,
@@ -1438,8 +1261,8 @@ def get_p_conv(
     Returnează p̄_conv [kPa] pentru pământuri fine coezive
     conform NP 112:2014, Tabelul D.4.
 
-    Interpolare biliniară pe (void_ratio = e, consistency_index = I_C)
-    în interiorul benzii de I_C selectate. Nu se interpolează cross-bandă.
+    Interpolare succesivă pe I_C și e în interiorul benzii selectate.
+    Nu se interpolează cross-bandă (limita benzii: I_C = 0.75).
     """
     result = ConventionalPressureResult(source=_SOURCE)
 
@@ -1468,14 +1291,17 @@ def get_p_conv(
     band = "upper" if consistency_index >= _IC_BAND_BOUNDARY else "lower"
     grid = _TABLE[plasticity_class][band]
 
-    br = interpolate_bilinear(grid, x=void_ratio, y=consistency_index)
+    value, interpolated = _interpolate_successive(grid, e=void_ratio, ic=consistency_index)
 
-    if br.value is None:
-        result.errors.extend(br.warnings)
+    if value is None:
+        result.errors.append(
+            f"Combinație (e={void_ratio}, I_C={consistency_index}) nu poate fi interpolată "
+            f"în banda {band!r} pentru plasticitate {plasticity_class!r}."
+        )
         return result
 
-    result.p_conv = br.value
-    result.interpolated = br.interpolated
+    result.p_conv = value
+    result.interpolated = interpolated
     result.valid = True
     return result
 ```
