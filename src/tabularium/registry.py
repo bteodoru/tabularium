@@ -12,6 +12,12 @@ from .np_122_2010.indicative_deformation_modulus_non_cohesive import (
 from .np_122_2010.indicative_deformation_modulus_cohesive import (
     get_deformation_modulus as _np122_deformation_cohesive,
 )
+from .np_112_2014.presumed_bearing_pressure_rocks import get_presumed_bearing_pressure as _np112_rocks
+from .np_112_2014.presumed_bearing_pressure_boulders import get_presumed_bearing_pressure as _np112_boulders
+from .np_112_2014.presumed_bearing_pressure_gravels import get_presumed_bearing_pressure as _np112_gravels
+from .np_112_2014.presumed_bearing_pressure_sands import get_presumed_bearing_pressure as _np112_sands
+from .np_112_2014.presumed_bearing_pressure_fines import get_presumed_bearing_pressure as _np112_fines
+from .np_112_2014.presumed_bearing_pressure_fills import get_presumed_bearing_pressure as _np112_fills
 
 
 @dataclass
@@ -46,6 +52,42 @@ REGISTRY: dict[str, TableEntry] = {
         table_id="A.6.4",
         description="Valori caracteristice E (kPa) pentru pământuri coezive",
         lookup_fn=_np122_deformation_cohesive,
+    ),
+    "np_112_2014.presumed_bearing_pressure_rocks": TableEntry(
+        normative="NP 112:2014",
+        table_id="D.1",
+        description="Presiuni convenționale p̄_conv [kPa] pentru roci stâncoase și semi-stâncoase",
+        lookup_fn=_np112_rocks,
+    ),
+    "np_112_2014.presumed_bearing_pressure_boulders": TableEntry(
+        normative="NP 112:2014",
+        table_id="D.2",
+        description="Presiuni convenționale p̄_conv [kPa] pentru pământuri foarte grosiere",
+        lookup_fn=_np112_boulders,
+    ),
+    "np_112_2014.presumed_bearing_pressure_gravels": TableEntry(
+        normative="NP 112:2014",
+        table_id="D.2",
+        description="Presiuni convenționale p̄_conv [kPa] pentru pământuri grosiere (pietrișuri)",
+        lookup_fn=_np112_gravels,
+    ),
+    "np_112_2014.presumed_bearing_pressure_sands": TableEntry(
+        normative="NP 112:2014",
+        table_id="D.3",
+        description="Presiuni convenționale p̄_conv [kPa] pentru nisipuri",
+        lookup_fn=_np112_sands,
+    ),
+    "np_112_2014.presumed_bearing_pressure_fines": TableEntry(
+        normative="NP 112:2014",
+        table_id="D.4",
+        description="Presiuni convenționale p̄_conv [kPa] pentru pământuri fine coezive",
+        lookup_fn=_np112_fines,
+    ),
+    "np_112_2014.presumed_bearing_pressure_fills": TableEntry(
+        normative="NP 112:2014",
+        table_id="D.5",
+        description="Presiuni convenționale p̄_conv [kPa] pentru umpluturi",
+        lookup_fn=_np112_fills,
     ),
 }
 

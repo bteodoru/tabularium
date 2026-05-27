@@ -25,7 +25,7 @@ Romanian geotechnical codes (NP 122, NP 112 etc.) contain numerous tables with n
 src/tabularium/
 ├── __init__.py
 ├── registry.py          # central index of all available tables
-├── interpolation.py     # shared interpolation utilities (linear, bilinear)
+├── interpolation.py     # shared interpolation utilities (linear)
 ├── models.py            # shared dataclasses (CodeSource, LookupResult)
 ├── np_122_2010/
 │   ├── __init__.py
@@ -34,7 +34,13 @@ src/tabularium/
 │   ├── indicative_deformation_modulus_non_cohesive.py  # Tabelul A.6.3 — E pentru pământuri nisipoase
 │   └── indicative_deformation_modulus_cohesive.py      # Tabelul A.6.4 — E pentru pământuri coezive
 ├── np_112_2014/
-│   └── __init__.py
+│   ├── __init__.py                                  # PresumedBearingPressureResult
+│   ├── presumed_bearing_pressure_rocks.py           # Tabelul D.1 — roci stâncoase și semi-stâncoase
+│   ├── presumed_bearing_pressure_boulders.py        # Tabelul D.2 — pământuri foarte grosiere
+│   ├── presumed_bearing_pressure_gravels.py         # Tabelul D.2 — pământuri grosiere (pietrișuri)
+│   ├── presumed_bearing_pressure_sands.py           # Tabelul D.3 — nisipuri
+│   ├── presumed_bearing_pressure_fines.py           # Tabelul D.4 — pământuri fine coezive
+│   └── presumed_bearing_pressure_fills.py           # Tabelul D.5 — umpluturi
 tests/
 ├── test_models.py
 ├── test_interpolation.py
@@ -42,7 +48,13 @@ tests/
 ├── test_np_122_2010_indicative_shear_strength_cohesive.py
 ├── test_np_122_2010_indicative_deformation_modulus_non_cohesive.py
 ├── test_np_122_2010_indicative_deformation_modulus_cohesive.py
-└── test_registry.py
+├── test_registry.py
+├── test_np_112_2014_presumed_bearing_pressure_rocks.py
+├── test_np_112_2014_presumed_bearing_pressure_boulders.py
+├── test_np_112_2014_presumed_bearing_pressure_gravels.py
+├── test_np_112_2014_presumed_bearing_pressure_sands.py
+├── test_np_112_2014_presumed_bearing_pressure_fines.py
+└── test_np_112_2014_presumed_bearing_pressure_fills.py
 ```
 
 ## Design principles
