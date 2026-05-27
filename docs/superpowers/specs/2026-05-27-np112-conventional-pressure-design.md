@@ -143,7 +143,8 @@ def get_p_conv(
 
 - Toate valorile fixe, fără interpolare.
 - `moisture_condition` relevant doar pentru `FINE_SAND` și `SILTY_SAND`; pentru `COARSE_SAND` și `MEDIUM_SAND` orice `MoistureCondition` e acceptat — tabelul are un singur rând per categorie, deci moisture nu influențează valoarea.
-- Combinație `(soil_category, moisture_condition)` inexistentă în tabel (e.g. `FINE_SAND` + `DRY`) → `errors`, `valid=False`.
+- `FINE_SAND` acceptă `DRY_OR_MOIST`, `DRY` și `MOIST` ca echivalente (rutare la același rând "uscat sau umed") — evită ambiguitatea când utilizatorul nu știe că tabelul combină cele două stări. `FINE_SAND` + `VERY_MOIST_SATURATED` → al doilea rând.
+- Combinație `(soil_category, moisture_condition)` inexistentă în tabel (e.g. `SILTY_SAND` + `DRY_OR_MOIST`) → `errors`, `valid=False`.
 
 | `soil_category` | `moisture_condition` | `DENSE` | `MEDIUM` |
 |---|---|---|---|
@@ -165,8 +166,9 @@ def get_p_conv(
 ) -> ConventionalPressureResult
 ```
 
-- Interpolare biliniară pe `(e, I_C)` folosind `interpolate_bilinear` (nou în `interpolation.py`).
-- Normativul definește două benzi de `I_C` per clasă de plasticitate: `[0.5, 0.75)` și `[0.75, 1.0]`.
+- Tabelul are **două sub-grile separate** per clasă de plasticitate: banda `[0.5, 0.75)` și banda `[0.75, 1.0]`. Nu există interpolare cross-bandă.
+- Logica de lookup: (1) selectează banda după `I_C` (`I_C < 0.75` → banda inferioară, `I_C ≥ 0.75` → banda superioară); (2) aplică `interpolate_bilinear` pe sub-grila selectată cu `x = e`, `y = I_C`.
+- `interpolate_bilinear` operează întotdeauna pe o singură sub-grilă rectangulară — nu traversează granița dintre benzi.
 - Domenii valide `e` per clasă: LOW `e < 0.7`, MEDIUM `e < 1.0`, HIGH `e < 1.1`.
 - `I_C < 0.5` sau `I_C > 1.0` sau `e` depășește limita → `errors`, `valid=False`.
 - Nota 1 din normativ: se interpolează succesiv după `I_C` și `e`.
