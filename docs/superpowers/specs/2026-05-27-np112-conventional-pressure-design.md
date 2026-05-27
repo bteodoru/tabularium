@@ -1,4 +1,4 @@
-# Design: NP 112:2014 Conventional Pressure Tables (Anexa D)
+# Design: NP 112:2014 Presumed Bearing Pressure Tables (Anexa D)
 
 **Date:** 2026-05-27
 **Normative:** NP 112:2014
@@ -8,7 +8,7 @@
 
 ## 1. Overview
 
-Implementarea a 6 module în `src/tabularium/np_112_2014/`, fiecare acoperind o categorie semantică de teren. Toate modulele returnează același tip de result (`ConventionalPressureResult`), definit o singură dată în `np_112_2014/__init__.py`.
+Implementarea a 6 module în `src/tabularium/np_112_2014/`, fiecare acoperind o categorie semantică de teren. Toate modulele returnează același tip de result (`PresumedBearingPressureResult`), definit o singură dată în `np_112_2014/__init__.py`.
 
 Provocarea principală față de tabelele NP 122 existente: unele intrări returnează **intervale** (`p_conv_range`) în loc de valori scalare, cu două tipuri distincte de intervale:
 - **Range de judecată** (D.1): normativul nu oferă formulă de interpolare, practicianul alege.
@@ -22,7 +22,7 @@ Definit în `src/tabularium/np_112_2014/__init__.py`, extinde `LookupResult` din
 
 ```python
 @dataclass
-class ConventionalPressureResult(LookupResult):
+class PresumedBearingPressureResult(LookupResult):
     p_conv: float | None = None
     p_conv_range: tuple[float, float] | None = None
 
@@ -86,10 +86,10 @@ class FillSoilType(str, Enum):
 
 ## 4. Module și semnături
 
-### `conventional_pressure_rocks.py` — Tabelul D.1
+### `presumed_bearing_pressure_rocks.py` — Tabelul D.1
 
 ```python
-def get_p_conv(soil_category: SoilCategory) -> ConventionalPressureResult
+def get_presumed_bearing_pressure(soil_category: SoilCategory) -> PresumedBearingPressureResult
 ```
 
 - Returnează întotdeauna `p_conv_range`, `p_conv=None`.
@@ -102,13 +102,13 @@ def get_p_conv(soil_category: SoilCategory) -> ConventionalPressureResult
 | `SEMI_ROCKY_MARL` | (350, 1100) |
 | `SEMI_ROCKY_SHALE` | (600, 850) |
 
-### `conventional_pressure_boulders.py` — Tabelul D.2 (pământuri foarte grosiere)
+### `presumed_bearing_pressure_boulders.py` — Tabelul D.2 (pământuri foarte grosiere)
 
 ```python
-def get_p_conv(
+def get_presumed_bearing_pressure(
     soil_category: SoilCategory,
     consistency_index: float | None = None,
-) -> ConventionalPressureResult
+) -> PresumedBearingPressureResult
 ```
 
 - `BOULDER_GRAVEL_FILL`: valoare fixă 750 kPa, `consistency_index` ignorat.
@@ -117,13 +117,13 @@ def get_p_conv(
   - Dacă `consistency_index=None`: `p_conv_range=(350, 600)`, warning "Furnizați I_C pentru a rezolva valoarea".
   - `I_C` în afara `[0.5, 1.0]`: `errors`, `valid=False`.
 
-### `conventional_pressure_gravels.py` — Tabelul D.2 (pământuri grosiere)
+### `presumed_bearing_pressure_gravels.py` — Tabelul D.2 (pământuri grosiere)
 
 ```python
-def get_p_conv(
+def get_presumed_bearing_pressure(
     soil_category: SoilCategory,
     consistency_index: float | None = None,
-) -> ConventionalPressureResult
+) -> PresumedBearingPressureResult
 ```
 
 - `GRAVEL_CLEAN_CRYSTAL`: 600 kPa fix.
@@ -131,14 +131,14 @@ def get_p_conv(
 - `GRAVEL_SEDIMENTARY`: 350 kPa fix.
 - `GRAVEL_SILTY_SAND`: range interpolabil pe `I_C ∈ [0.5, 1.0]`, același comportament ca `BOULDER_CLAY_FILL`.
 
-### `conventional_pressure_sands.py` — Tabelul D.3
+### `presumed_bearing_pressure_sands.py` — Tabelul D.3
 
 ```python
-def get_p_conv(
+def get_presumed_bearing_pressure(
     soil_category: SoilCategory,
     relative_density: RelativeDensity,
     moisture_condition: MoistureCondition,
-) -> ConventionalPressureResult
+) -> PresumedBearingPressureResult
 ```
 
 - Toate valorile fixe, fără interpolare.
@@ -159,14 +159,14 @@ def get_p_conv(
 | `SILTY_SAND` | `VERY_MOIST` | 200 | 150 |
 | `SILTY_SAND` | `SATURATED` | 200 | 150 |
 
-### `conventional_pressure_fines.py` — Tabelul D.4
+### `presumed_bearing_pressure_fines.py` — Tabelul D.4
 
 ```python
-def get_p_conv(
+def get_presumed_bearing_pressure(
     plasticity_class: PlasticityClass,
     void_ratio: float,        # e — indicele porilor
     consistency_index: float, # I_C
-) -> ConventionalPressureResult
+) -> PresumedBearingPressureResult
 ```
 
 - Tabelul are **două sub-grile separate** per clasă de plasticitate: banda `[0.5, 0.75)` și banda `[0.75, 1.0]`. Nu există interpolare cross-bandă.
@@ -176,14 +176,14 @@ def get_p_conv(
 - `I_C < 0.5` sau `I_C > 1.0` sau `e` depășește limita → `errors`, `valid=False`.
 - Nota 1 din normativ: se interpolează succesiv după `I_C` și `e`.
 
-### `conventional_pressure_fills.py` — Tabelul D.5
+### `presumed_bearing_pressure_fills.py` — Tabelul D.5
 
 ```python
-def get_p_conv(
+def get_presumed_bearing_pressure(
     fill_type: FillType,
     fill_soil_type: FillSoilType,
     saturation_degree: float,  # S_r ∈ [0, 1]
-) -> ConventionalPressureResult
+) -> PresumedBearingPressureResult
 ```
 
 - Valorile tabelate la `S_r ≤ 0.5` și `S_r ≥ 0.8`.
@@ -233,12 +233,12 @@ Folosit în D.2 (interpolare pe `I_C`) și D.5 (interpolare pe `S_r`).
 6 intrări noi în `registry.py`:
 
 ```python
-"np_112_2014.conventional_pressure_rocks":    TableEntry(normative="NP 112:2014", table_id="D.1", ...)
-"np_112_2014.conventional_pressure_boulders": TableEntry(normative="NP 112:2014", table_id="D.2", ...)
-"np_112_2014.conventional_pressure_gravels":  TableEntry(normative="NP 112:2014", table_id="D.2", ...)
-"np_112_2014.conventional_pressure_sands":    TableEntry(normative="NP 112:2014", table_id="D.3", ...)
-"np_112_2014.conventional_pressure_fines":    TableEntry(normative="NP 112:2014", table_id="D.4", ...)
-"np_112_2014.conventional_pressure_fills":    TableEntry(normative="NP 112:2014", table_id="D.5", ...)
+"np_112_2014.presumed_bearing_pressure_rocks":    TableEntry(normative="NP 112:2014", table_id="D.1", ...)
+"np_112_2014.presumed_bearing_pressure_boulders": TableEntry(normative="NP 112:2014", table_id="D.2", ...)
+"np_112_2014.presumed_bearing_pressure_gravels":  TableEntry(normative="NP 112:2014", table_id="D.2", ...)
+"np_112_2014.presumed_bearing_pressure_sands":    TableEntry(normative="NP 112:2014", table_id="D.3", ...)
+"np_112_2014.presumed_bearing_pressure_fines":    TableEntry(normative="NP 112:2014", table_id="D.4", ...)
+"np_112_2014.presumed_bearing_pressure_fills":    TableEntry(normative="NP 112:2014", table_id="D.5", ...)
 ```
 
 ---
@@ -249,12 +249,12 @@ Un fișier de test per modul + extindere `test_interpolation.py` pentru `interpo
 
 | Fișier test | Acoperire minimă |
 |---|---|
-| `test_np_112_2014_conventional_pressure_rocks.py` | lookup exact per categorie, `is_resolved=False`, warning prezent |
-| `test_np_112_2014_conventional_pressure_boulders.py` | valoare fixă, range nerezolvat, interpolare pe I_C, I_C out-of-range |
-| `test_np_112_2014_conventional_pressure_gravels.py` | valori fixe, range nerezolvat, interpolare pe I_C |
-| `test_np_112_2014_conventional_pressure_sands.py` | lookup exact per combinație, combinație invalidă |
-| `test_np_112_2014_conventional_pressure_fines.py` | lookup exact pe nod, interpolare biliniară, e out-of-range, I_C out-of-range |
-| `test_np_112_2014_conventional_pressure_fills.py` | lookup exact la S_r ≤ 0.5, la S_r ≥ 0.8, interpolare, S_r invalid |
+| `test_np_112_2014_presumed_bearing_pressure_rocks.py` | lookup exact per categorie, `is_resolved=False`, warning prezent |
+| `test_np_112_2014_presumed_bearing_pressure_boulders.py` | valoare fixă, range nerezolvat, interpolare pe I_C, I_C out-of-range |
+| `test_np_112_2014_presumed_bearing_pressure_gravels.py` | valori fixe, range nerezolvat, interpolare pe I_C |
+| `test_np_112_2014_presumed_bearing_pressure_sands.py` | lookup exact per combinație, combinație invalidă |
+| `test_np_112_2014_presumed_bearing_pressure_fines.py` | lookup exact pe nod, interpolare biliniară, e out-of-range, I_C out-of-range |
+| `test_np_112_2014_presumed_bearing_pressure_fills.py` | lookup exact la S_r ≤ 0.5, la S_r ≥ 0.8, interpolare, S_r invalid |
 | `test_interpolation.py` (extins) | `interpolate_bilinear`: exact pe nod, interpolare pe o axă, interpolare biliniară, out-of-range |
 
 ---

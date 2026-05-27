@@ -1,10 +1,10 @@
-# NP 112:2014 Conventional Pressure Tables Implementation Plan
+# NP 112:2014 Presumed Bearing Pressure Tables Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Implement tabelele D.1–D.5 din NP 112:2014 Anexa D ca 6 module în `src/tabularium/np_112_2014/`, cu lookup + interpolare și result type comun.
+**Goal:** Implement tabelele D.1–D.5 din NP 112:2014 Anexa D ca 6 module în `src/tabularium/np_112_2014/`, expunând presiunile convenționale (presumed bearing pressure) cu lookup + interpolare și result type comun.
 
-**Architecture:** Shared `ConventionalPressureResult(LookupResult)` in `np_112_2014/__init__.py`. Enums extinse în `enums.py`. D.4 folosește două apeluri succesive `interpolate_linear` (existent) pe axele `e` și `I_C` — nu e nevoie de o funcție nouă. Fiecare tabel e un modul separat cu `_SOURCE`, `_TABLE`, și `get_p_conv()`.
+**Architecture:** Shared `PresumedBearingPressureResult(LookupResult)` in `np_112_2014/__init__.py`. Enums extinse în `enums.py`. D.4 folosește două apeluri succesive `interpolate_linear` (existent) pe axele `e` și `I_C` — nu e nevoie de o funcție nouă. Fiecare tabel e un modul separat cu `_SOURCE`, `_TABLE`, și `get_presumed_bearing_pressure()`.
 
 **Tech Stack:** Python 3.10+, stdlib `dataclasses`, `bisect`. Test runner: `pytest`.
 
@@ -16,20 +16,20 @@
 |---|---|
 | Modify | `src/tabularium/enums.py` |
 | Modify | `src/tabularium/np_112_2014/__init__.py` |
-| Create | `src/tabularium/np_112_2014/conventional_pressure_rocks.py` |
-| Create | `src/tabularium/np_112_2014/conventional_pressure_boulders.py` |
-| Create | `src/tabularium/np_112_2014/conventional_pressure_gravels.py` |
-| Create | `src/tabularium/np_112_2014/conventional_pressure_sands.py` |
-| Create | `src/tabularium/np_112_2014/conventional_pressure_fines.py` |
-| Create | `src/tabularium/np_112_2014/conventional_pressure_fills.py` |
+| Create | `src/tabularium/np_112_2014/presumed_bearing_pressure_rocks.py` |
+| Create | `src/tabularium/np_112_2014/presumed_bearing_pressure_boulders.py` |
+| Create | `src/tabularium/np_112_2014/presumed_bearing_pressure_gravels.py` |
+| Create | `src/tabularium/np_112_2014/presumed_bearing_pressure_sands.py` |
+| Create | `src/tabularium/np_112_2014/presumed_bearing_pressure_fines.py` |
+| Create | `src/tabularium/np_112_2014/presumed_bearing_pressure_fills.py` |
 | Modify | `src/tabularium/registry.py` |
 | Modify | `CLAUDE.md` |
-| Create | `tests/test_np_112_2014_conventional_pressure_rocks.py` |
-| Create | `tests/test_np_112_2014_conventional_pressure_boulders.py` |
-| Create | `tests/test_np_112_2014_conventional_pressure_gravels.py` |
-| Create | `tests/test_np_112_2014_conventional_pressure_sands.py` |
-| Create | `tests/test_np_112_2014_conventional_pressure_fines.py` |
-| Create | `tests/test_np_112_2014_conventional_pressure_fills.py` |
+| Create | `tests/test_np_112_2014_presumed_bearing_pressure_rocks.py` |
+| Create | `tests/test_np_112_2014_presumed_bearing_pressure_boulders.py` |
+| Create | `tests/test_np_112_2014_presumed_bearing_pressure_gravels.py` |
+| Create | `tests/test_np_112_2014_presumed_bearing_pressure_sands.py` |
+| Create | `tests/test_np_112_2014_presumed_bearing_pressure_fines.py` |
+| Create | `tests/test_np_112_2014_presumed_bearing_pressure_fills.py` |
 
 ---
 
@@ -120,12 +120,12 @@ git commit -m "feat(enums): add SoilCategory entries and new enums for NP 112:20
 
 ---
 
-## Task 2: `ConventionalPressureResult`
+## Task 2: `PresumedBearingPressureResult`
 
 **Files:**
 - Modify: `src/tabularium/np_112_2014/__init__.py`
 
-- [ ] **Step 1: Add `ConventionalPressureResult` în `np_112_2014/__init__.py`**
+- [ ] **Step 1: Add `PresumedBearingPressureResult` în `np_112_2014/__init__.py`**
 
 Înlocuiește conținutul fișierului `src/tabularium/np_112_2014/__init__.py`:
 
@@ -138,7 +138,7 @@ from ..models import LookupResult
 
 
 @dataclass
-class ConventionalPressureResult(LookupResult):
+class PresumedBearingPressureResult(LookupResult):
     p_conv: float | None = None
     p_conv_range: tuple[float, float] | None = None
 
@@ -159,32 +159,32 @@ Expected: toate testele existente PASS (nicio modificare la NP 122).
 
 ```bash
 git add src/tabularium/np_112_2014/__init__.py
-git commit -m "feat(np112): add ConventionalPressureResult"
+git commit -m "feat(np112): add PresumedBearingPressureResult"
 ```
 
 ---
 
-## Task 3: D.1 — `conventional_pressure_rocks.py`
+## Task 3: D.1 — `presumed_bearing_pressure_rocks.py`
 
 **Files:**
-- Create: `src/tabularium/np_112_2014/conventional_pressure_rocks.py`
-- Create: `tests/test_np_112_2014_conventional_pressure_rocks.py`
+- Create: `src/tabularium/np_112_2014/presumed_bearing_pressure_rocks.py`
+- Create: `tests/test_np_112_2014_presumed_bearing_pressure_rocks.py`
 
 - [ ] **Step 1: Write failing tests**
 
-Creează `tests/test_np_112_2014_conventional_pressure_rocks.py`:
+Creează `tests/test_np_112_2014_presumed_bearing_pressure_rocks.py`:
 
 ```python
 import pytest
-from tabularium.np_112_2014.conventional_pressure_rocks import (
+from tabularium.np_112_2014.presumed_bearing_pressure_rocks import (
     SoilCategory,
-    ConventionalPressureResult,
-    get_p_conv,
+    PresumedBearingPressureResult,
+    get_presumed_bearing_pressure,
 )
 
 
 def test_rocky_returns_range():
-    r = get_p_conv(SoilCategory.ROCKY)
+    r = get_presumed_bearing_pressure(SoilCategory.ROCKY)
     assert r.valid is True
     assert r.p_conv is None
     assert r.p_conv_range == (1000.0, 6000.0)
@@ -194,43 +194,43 @@ def test_rocky_returns_range():
 
 
 def test_semi_rocky_marl_returns_range():
-    r = get_p_conv(SoilCategory.SEMI_ROCKY_MARL)
+    r = get_presumed_bearing_pressure(SoilCategory.SEMI_ROCKY_MARL)
     assert r.valid is True
     assert r.p_conv_range == (350.0, 1100.0)
     assert r.is_resolved is False
 
 
 def test_semi_rocky_shale_returns_range():
-    r = get_p_conv(SoilCategory.SEMI_ROCKY_SHALE)
+    r = get_presumed_bearing_pressure(SoilCategory.SEMI_ROCKY_SHALE)
     assert r.valid is True
     assert r.p_conv_range == (600.0, 850.0)
 
 
 def test_warning_present():
-    r = get_p_conv(SoilCategory.ROCKY)
+    r = get_presumed_bearing_pressure(SoilCategory.ROCKY)
     assert any("compactit" in w.lower() or "degradare" in w.lower() for w in r.warnings)
 
 
 def test_source_metadata():
-    r = get_p_conv(SoilCategory.ROCKY)
+    r = get_presumed_bearing_pressure(SoilCategory.ROCKY)
     assert r.source is not None
     assert r.source.code == "NP 112:2014"
     assert r.source.table == "Tabelul D.1"
 
 
 def test_result_type():
-    r = get_p_conv(SoilCategory.ROCKY)
-    assert isinstance(r, ConventionalPressureResult)
+    r = get_presumed_bearing_pressure(SoilCategory.ROCKY)
+    assert isinstance(r, PresumedBearingPressureResult)
 
 
 def test_invalid_category():
-    r = get_p_conv("invalid")
+    r = get_presumed_bearing_pressure("invalid")
     assert r.valid is False
     assert len(r.errors) == 1
 
 
 def test_non_rocky_category_rejected():
-    r = get_p_conv(SoilCategory.FINE_SAND)
+    r = get_presumed_bearing_pressure(SoilCategory.FINE_SAND)
     assert r.valid is False
     assert len(r.errors) == 1
 ```
@@ -238,21 +238,21 @@ def test_non_rocky_category_rejected():
 - [ ] **Step 2: Run to verify fail**
 
 ```
-pytest tests/test_np_112_2014_conventional_pressure_rocks.py -v
+pytest tests/test_np_112_2014_presumed_bearing_pressure_rocks.py -v
 ```
 
 Expected: FAIL with `ModuleNotFoundError`.
 
 - [ ] **Step 3: Implement modul**
 
-Creează `src/tabularium/np_112_2014/conventional_pressure_rocks.py`:
+Creează `src/tabularium/np_112_2014/presumed_bearing_pressure_rocks.py`:
 
 ```python
 from __future__ import annotations
 
 from ..enums import SoilCategory
 from ..models import CodeSource
-from . import ConventionalPressureResult
+from . import PresumedBearingPressureResult
 
 _SOURCE = CodeSource(code="NP 112:2014", table="Tabelul D.1")
 
@@ -270,12 +270,12 @@ _WARNING = (
 )
 
 
-def get_p_conv(soil_category: SoilCategory) -> ConventionalPressureResult:
+def get_presumed_bearing_pressure(soil_category: SoilCategory) -> PresumedBearingPressureResult:
     """
     Returnează intervalul presiunii convenționale de bază p̄_conv [kPa]
     pentru roci stâncoase și semi-stâncoase conform NP 112:2014, Tabelul D.1.
     """
-    result = ConventionalPressureResult(source=_SOURCE)
+    result = PresumedBearingPressureResult(source=_SOURCE)
 
     try:
         soil_category = SoilCategory(soil_category)
@@ -299,7 +299,7 @@ def get_p_conv(soil_category: SoilCategory) -> ConventionalPressureResult:
 - [ ] **Step 4: Run tests**
 
 ```
-pytest tests/test_np_112_2014_conventional_pressure_rocks.py -v
+pytest tests/test_np_112_2014_presumed_bearing_pressure_rocks.py -v
 ```
 
 Expected: all PASS.
@@ -307,35 +307,35 @@ Expected: all PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/tabularium/np_112_2014/conventional_pressure_rocks.py tests/test_np_112_2014_conventional_pressure_rocks.py
-git commit -m "feat(np112): add conventional_pressure_rocks (Tabelul D.1)"
+git add src/tabularium/np_112_2014/presumed_bearing_pressure_rocks.py tests/test_np_112_2014_presumed_bearing_pressure_rocks.py
+git commit -m "feat(np112): add presumed_bearing_pressure_rocks (Tabelul D.1)"
 ```
 
 ---
 
-## Task 4: D.2 — `conventional_pressure_boulders.py`
+## Task 4: D.2 — `presumed_bearing_pressure_boulders.py`
 
 **Files:**
-- Create: `src/tabularium/np_112_2014/conventional_pressure_boulders.py`
-- Create: `tests/test_np_112_2014_conventional_pressure_boulders.py`
+- Create: `src/tabularium/np_112_2014/presumed_bearing_pressure_boulders.py`
+- Create: `tests/test_np_112_2014_presumed_bearing_pressure_boulders.py`
 
 - [ ] **Step 1: Write failing tests**
 
-Creează `tests/test_np_112_2014_conventional_pressure_boulders.py`:
+Creează `tests/test_np_112_2014_presumed_bearing_pressure_boulders.py`:
 
 ```python
 import pytest
-from tabularium.np_112_2014.conventional_pressure_boulders import (
+from tabularium.np_112_2014.presumed_bearing_pressure_boulders import (
     SoilCategory,
-    ConventionalPressureResult,
-    get_p_conv,
+    PresumedBearingPressureResult,
+    get_presumed_bearing_pressure,
 )
 
 
 # ── BOULDER_GRAVEL_FILL — fixed value ─────────────────────────────────────────
 
 def test_boulder_gravel_fill_fixed():
-    r = get_p_conv(SoilCategory.BOULDER_GRAVEL_FILL)
+    r = get_presumed_bearing_pressure(SoilCategory.BOULDER_GRAVEL_FILL)
     assert r.valid is True
     assert r.p_conv == pytest.approx(750.0)
     assert r.p_conv_range is None
@@ -345,7 +345,7 @@ def test_boulder_gravel_fill_fixed():
 
 
 def test_boulder_gravel_fill_ignores_ic():
-    r = get_p_conv(SoilCategory.BOULDER_GRAVEL_FILL, consistency_index=0.7)
+    r = get_presumed_bearing_pressure(SoilCategory.BOULDER_GRAVEL_FILL, consistency_index=0.7)
     assert r.valid is True
     assert r.p_conv == pytest.approx(750.0)
 
@@ -353,7 +353,7 @@ def test_boulder_gravel_fill_ignores_ic():
 # ── BOULDER_CLAY_FILL — interpolable range ────────────────────────────────────
 
 def test_boulder_clay_fill_no_ic_returns_range():
-    r = get_p_conv(SoilCategory.BOULDER_CLAY_FILL)
+    r = get_presumed_bearing_pressure(SoilCategory.BOULDER_CLAY_FILL)
     assert r.valid is True
     assert r.p_conv is None
     assert r.p_conv_range == (350.0, 600.0)
@@ -362,14 +362,14 @@ def test_boulder_clay_fill_no_ic_returns_range():
 
 
 def test_boulder_clay_fill_ic_min():
-    r = get_p_conv(SoilCategory.BOULDER_CLAY_FILL, consistency_index=0.5)
+    r = get_presumed_bearing_pressure(SoilCategory.BOULDER_CLAY_FILL, consistency_index=0.5)
     assert r.valid is True
     assert r.p_conv == pytest.approx(350.0)
     assert r.interpolated is False
 
 
 def test_boulder_clay_fill_ic_max():
-    r = get_p_conv(SoilCategory.BOULDER_CLAY_FILL, consistency_index=1.0)
+    r = get_presumed_bearing_pressure(SoilCategory.BOULDER_CLAY_FILL, consistency_index=1.0)
     assert r.valid is True
     assert r.p_conv == pytest.approx(600.0)
     assert r.interpolated is False
@@ -377,43 +377,43 @@ def test_boulder_clay_fill_ic_max():
 
 def test_boulder_clay_fill_ic_interpolated():
     # IC=0.75 is midpoint of [0.5, 1.0] → 350 + 0.5*(600-350) = 475
-    r = get_p_conv(SoilCategory.BOULDER_CLAY_FILL, consistency_index=0.75)
+    r = get_presumed_bearing_pressure(SoilCategory.BOULDER_CLAY_FILL, consistency_index=0.75)
     assert r.valid is True
     assert r.p_conv == pytest.approx(475.0)
     assert r.interpolated is True
 
 
 def test_boulder_clay_fill_ic_below_range():
-    r = get_p_conv(SoilCategory.BOULDER_CLAY_FILL, consistency_index=0.3)
+    r = get_presumed_bearing_pressure(SoilCategory.BOULDER_CLAY_FILL, consistency_index=0.3)
     assert r.valid is False
     assert len(r.errors) == 1
 
 
 def test_boulder_clay_fill_ic_above_range():
-    r = get_p_conv(SoilCategory.BOULDER_CLAY_FILL, consistency_index=1.1)
+    r = get_presumed_bearing_pressure(SoilCategory.BOULDER_CLAY_FILL, consistency_index=1.1)
     assert r.valid is False
     assert len(r.errors) == 1
 
 
 def test_source_metadata():
-    r = get_p_conv(SoilCategory.BOULDER_GRAVEL_FILL)
+    r = get_presumed_bearing_pressure(SoilCategory.BOULDER_GRAVEL_FILL)
     assert r.source.code == "NP 112:2014"
     assert r.source.table == "Tabelul D.2"
 
 
 def test_result_type():
-    r = get_p_conv(SoilCategory.BOULDER_GRAVEL_FILL)
-    assert isinstance(r, ConventionalPressureResult)
+    r = get_presumed_bearing_pressure(SoilCategory.BOULDER_GRAVEL_FILL)
+    assert isinstance(r, PresumedBearingPressureResult)
 
 
 def test_invalid_category():
-    r = get_p_conv("invalid")
+    r = get_presumed_bearing_pressure("invalid")
     assert r.valid is False
     assert len(r.errors) == 1
 
 
 def test_non_boulder_category_rejected():
-    r = get_p_conv(SoilCategory.FINE_SAND)
+    r = get_presumed_bearing_pressure(SoilCategory.FINE_SAND)
     assert r.valid is False
     assert len(r.errors) == 1
 ```
@@ -421,14 +421,14 @@ def test_non_boulder_category_rejected():
 - [ ] **Step 2: Run to verify fail**
 
 ```
-pytest tests/test_np_112_2014_conventional_pressure_boulders.py -v
+pytest tests/test_np_112_2014_presumed_bearing_pressure_boulders.py -v
 ```
 
 Expected: FAIL with `ModuleNotFoundError`.
 
 - [ ] **Step 3: Implement modul**
 
-Creează `src/tabularium/np_112_2014/conventional_pressure_boulders.py`:
+Creează `src/tabularium/np_112_2014/presumed_bearing_pressure_boulders.py`:
 
 ```python
 from __future__ import annotations
@@ -436,7 +436,7 @@ from __future__ import annotations
 from ..enums import SoilCategory
 from ..interpolation import interpolate_linear
 from ..models import CodeSource
-from . import ConventionalPressureResult
+from . import PresumedBearingPressureResult
 
 _SOURCE = CodeSource(code="NP 112:2014", table="Tabelul D.2")
 
@@ -454,17 +454,17 @@ _INTERPOLABLE: dict[SoilCategory, dict[float, float]] = {
 _IC_RANGE_WARNING = "Furnizați consistency_index (I_C) pentru a rezolva valoarea exactă."
 
 
-def get_p_conv(
+def get_presumed_bearing_pressure(
     soil_category: SoilCategory,
     consistency_index: float | None = None,
-) -> ConventionalPressureResult:
+) -> PresumedBearingPressureResult:
     """
     Returnează p̄_conv [kPa] pentru pământuri foarte grosiere
     conform NP 112:2014, Tabelul D.2.
 
     consistency_index (I_C) necesar doar pentru BOULDER_CLAY_FILL.
     """
-    result = ConventionalPressureResult(source=_SOURCE)
+    result = PresumedBearingPressureResult(source=_SOURCE)
 
     try:
         soil_category = SoilCategory(soil_category)
@@ -511,7 +511,7 @@ def get_p_conv(
 - [ ] **Step 4: Run tests**
 
 ```
-pytest tests/test_np_112_2014_conventional_pressure_boulders.py -v
+pytest tests/test_np_112_2014_presumed_bearing_pressure_boulders.py -v
 ```
 
 Expected: all PASS.
@@ -519,33 +519,33 @@ Expected: all PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/tabularium/np_112_2014/conventional_pressure_boulders.py tests/test_np_112_2014_conventional_pressure_boulders.py
-git commit -m "feat(np112): add conventional_pressure_boulders (Tabelul D.2)"
+git add src/tabularium/np_112_2014/presumed_bearing_pressure_boulders.py tests/test_np_112_2014_presumed_bearing_pressure_boulders.py
+git commit -m "feat(np112): add presumed_bearing_pressure_boulders (Tabelul D.2)"
 ```
 
 ---
 
-## Task 5: D.2 — `conventional_pressure_gravels.py`
+## Task 5: D.2 — `presumed_bearing_pressure_gravels.py`
 
 **Files:**
-- Create: `src/tabularium/np_112_2014/conventional_pressure_gravels.py`
-- Create: `tests/test_np_112_2014_conventional_pressure_gravels.py`
+- Create: `src/tabularium/np_112_2014/presumed_bearing_pressure_gravels.py`
+- Create: `tests/test_np_112_2014_presumed_bearing_pressure_gravels.py`
 
 - [ ] **Step 1: Write failing tests**
 
-Creează `tests/test_np_112_2014_conventional_pressure_gravels.py`:
+Creează `tests/test_np_112_2014_presumed_bearing_pressure_gravels.py`:
 
 ```python
 import pytest
-from tabularium.np_112_2014.conventional_pressure_gravels import (
+from tabularium.np_112_2014.presumed_bearing_pressure_gravels import (
     SoilCategory,
-    ConventionalPressureResult,
-    get_p_conv,
+    PresumedBearingPressureResult,
+    get_presumed_bearing_pressure,
 )
 
 
 def test_gravel_clean_crystal():
-    r = get_p_conv(SoilCategory.GRAVEL_CLEAN_CRYSTAL)
+    r = get_presumed_bearing_pressure(SoilCategory.GRAVEL_CLEAN_CRYSTAL)
     assert r.valid is True
     assert r.p_conv == pytest.approx(600.0)
     assert r.p_conv_range is None
@@ -553,19 +553,19 @@ def test_gravel_clean_crystal():
 
 
 def test_gravel_with_sand():
-    r = get_p_conv(SoilCategory.GRAVEL_WITH_SAND)
+    r = get_presumed_bearing_pressure(SoilCategory.GRAVEL_WITH_SAND)
     assert r.valid is True
     assert r.p_conv == pytest.approx(550.0)
 
 
 def test_gravel_sedimentary():
-    r = get_p_conv(SoilCategory.GRAVEL_SEDIMENTARY)
+    r = get_presumed_bearing_pressure(SoilCategory.GRAVEL_SEDIMENTARY)
     assert r.valid is True
     assert r.p_conv == pytest.approx(350.0)
 
 
 def test_gravel_silty_sand_no_ic_returns_range():
-    r = get_p_conv(SoilCategory.GRAVEL_SILTY_SAND)
+    r = get_presumed_bearing_pressure(SoilCategory.GRAVEL_SILTY_SAND)
     assert r.valid is True
     assert r.p_conv is None
     assert r.p_conv_range == (350.0, 500.0)
@@ -573,14 +573,14 @@ def test_gravel_silty_sand_no_ic_returns_range():
 
 
 def test_gravel_silty_sand_ic_min():
-    r = get_p_conv(SoilCategory.GRAVEL_SILTY_SAND, consistency_index=0.5)
+    r = get_presumed_bearing_pressure(SoilCategory.GRAVEL_SILTY_SAND, consistency_index=0.5)
     assert r.valid is True
     assert r.p_conv == pytest.approx(350.0)
     assert r.interpolated is False
 
 
 def test_gravel_silty_sand_ic_max():
-    r = get_p_conv(SoilCategory.GRAVEL_SILTY_SAND, consistency_index=1.0)
+    r = get_presumed_bearing_pressure(SoilCategory.GRAVEL_SILTY_SAND, consistency_index=1.0)
     assert r.valid is True
     assert r.p_conv == pytest.approx(500.0)
     assert r.interpolated is False
@@ -588,32 +588,32 @@ def test_gravel_silty_sand_ic_max():
 
 def test_gravel_silty_sand_ic_interpolated():
     # IC=0.75 midpoint [0.5, 1.0] → 350 + 0.5*150 = 425
-    r = get_p_conv(SoilCategory.GRAVEL_SILTY_SAND, consistency_index=0.75)
+    r = get_presumed_bearing_pressure(SoilCategory.GRAVEL_SILTY_SAND, consistency_index=0.75)
     assert r.valid is True
     assert r.p_conv == pytest.approx(425.0)
     assert r.interpolated is True
 
 
 def test_gravel_silty_sand_ic_out_of_range():
-    r = get_p_conv(SoilCategory.GRAVEL_SILTY_SAND, consistency_index=0.2)
+    r = get_presumed_bearing_pressure(SoilCategory.GRAVEL_SILTY_SAND, consistency_index=0.2)
     assert r.valid is False
     assert len(r.errors) == 1
 
 
 def test_source_metadata():
-    r = get_p_conv(SoilCategory.GRAVEL_WITH_SAND)
+    r = get_presumed_bearing_pressure(SoilCategory.GRAVEL_WITH_SAND)
     assert r.source.code == "NP 112:2014"
     assert r.source.table == "Tabelul D.2"
 
 
 def test_invalid_category():
-    r = get_p_conv("invalid")
+    r = get_presumed_bearing_pressure("invalid")
     assert r.valid is False
     assert len(r.errors) == 1
 
 
 def test_non_gravel_category_rejected():
-    r = get_p_conv(SoilCategory.ROCKY)
+    r = get_presumed_bearing_pressure(SoilCategory.ROCKY)
     assert r.valid is False
     assert len(r.errors) == 1
 ```
@@ -621,14 +621,14 @@ def test_non_gravel_category_rejected():
 - [ ] **Step 2: Run to verify fail**
 
 ```
-pytest tests/test_np_112_2014_conventional_pressure_gravels.py -v
+pytest tests/test_np_112_2014_presumed_bearing_pressure_gravels.py -v
 ```
 
 Expected: FAIL with `ModuleNotFoundError`.
 
 - [ ] **Step 3: Implement modul**
 
-Creează `src/tabularium/np_112_2014/conventional_pressure_gravels.py`:
+Creează `src/tabularium/np_112_2014/presumed_bearing_pressure_gravels.py`:
 
 ```python
 from __future__ import annotations
@@ -636,7 +636,7 @@ from __future__ import annotations
 from ..enums import SoilCategory
 from ..interpolation import interpolate_linear
 from ..models import CodeSource
-from . import ConventionalPressureResult
+from . import PresumedBearingPressureResult
 
 _SOURCE = CodeSource(code="NP 112:2014", table="Tabelul D.2")
 
@@ -660,17 +660,17 @@ _INTERPOLABLE: dict[SoilCategory, dict[float, float]] = {
 _IC_RANGE_WARNING = "Furnizați consistency_index (I_C) pentru a rezolva valoarea exactă."
 
 
-def get_p_conv(
+def get_presumed_bearing_pressure(
     soil_category: SoilCategory,
     consistency_index: float | None = None,
-) -> ConventionalPressureResult:
+) -> PresumedBearingPressureResult:
     """
     Returnează p̄_conv [kPa] pentru pământuri grosiere (pietrișuri)
     conform NP 112:2014, Tabelul D.2.
 
     consistency_index (I_C) necesar doar pentru GRAVEL_SILTY_SAND.
     """
-    result = ConventionalPressureResult(source=_SOURCE)
+    result = PresumedBearingPressureResult(source=_SOURCE)
 
     try:
         soil_category = SoilCategory(soil_category)
@@ -716,7 +716,7 @@ def get_p_conv(
 - [ ] **Step 4: Run tests**
 
 ```
-pytest tests/test_np_112_2014_conventional_pressure_gravels.py -v
+pytest tests/test_np_112_2014_presumed_bearing_pressure_gravels.py -v
 ```
 
 Expected: all PASS.
@@ -724,37 +724,37 @@ Expected: all PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/tabularium/np_112_2014/conventional_pressure_gravels.py tests/test_np_112_2014_conventional_pressure_gravels.py
-git commit -m "feat(np112): add conventional_pressure_gravels (Tabelul D.2)"
+git add src/tabularium/np_112_2014/presumed_bearing_pressure_gravels.py tests/test_np_112_2014_presumed_bearing_pressure_gravels.py
+git commit -m "feat(np112): add presumed_bearing_pressure_gravels (Tabelul D.2)"
 ```
 
 ---
 
-## Task 6: D.3 — `conventional_pressure_sands.py`
+## Task 6: D.3 — `presumed_bearing_pressure_sands.py`
 
 **Files:**
-- Create: `src/tabularium/np_112_2014/conventional_pressure_sands.py`
-- Create: `tests/test_np_112_2014_conventional_pressure_sands.py`
+- Create: `src/tabularium/np_112_2014/presumed_bearing_pressure_sands.py`
+- Create: `tests/test_np_112_2014_presumed_bearing_pressure_sands.py`
 
 - [ ] **Step 1: Write failing tests**
 
-Creează `tests/test_np_112_2014_conventional_pressure_sands.py`:
+Creează `tests/test_np_112_2014_presumed_bearing_pressure_sands.py`:
 
 ```python
 import pytest
-from tabularium.np_112_2014.conventional_pressure_sands import (
+from tabularium.np_112_2014.presumed_bearing_pressure_sands import (
     SoilCategory,
     RelativeDensity,
     MoistureCondition,
-    ConventionalPressureResult,
-    get_p_conv,
+    PresumedBearingPressureResult,
+    get_presumed_bearing_pressure,
 )
 
 
 # ── Exact lookups ─────────────────────────────────────────────────────────────
 
 def test_coarse_sand_dense():
-    r = get_p_conv(SoilCategory.COARSE_SAND, RelativeDensity.DENSE, MoistureCondition.DRY)
+    r = get_presumed_bearing_pressure(SoilCategory.COARSE_SAND, RelativeDensity.DENSE, MoistureCondition.DRY)
     assert r.valid is True
     assert r.p_conv == pytest.approx(700.0)
     assert r.errors == []
@@ -762,67 +762,67 @@ def test_coarse_sand_dense():
 
 
 def test_coarse_sand_medium():
-    r = get_p_conv(SoilCategory.COARSE_SAND, RelativeDensity.MEDIUM, MoistureCondition.SATURATED)
+    r = get_presumed_bearing_pressure(SoilCategory.COARSE_SAND, RelativeDensity.MEDIUM, MoistureCondition.SATURATED)
     assert r.valid is True
     assert r.p_conv == pytest.approx(600.0)
 
 
 def test_medium_sand_dense():
-    r = get_p_conv(SoilCategory.MEDIUM_SAND, RelativeDensity.DENSE, MoistureCondition.MOIST)
+    r = get_presumed_bearing_pressure(SoilCategory.MEDIUM_SAND, RelativeDensity.DENSE, MoistureCondition.MOIST)
     assert r.valid is True
     assert r.p_conv == pytest.approx(600.0)
 
 
 def test_medium_sand_medium():
-    r = get_p_conv(SoilCategory.MEDIUM_SAND, RelativeDensity.MEDIUM, MoistureCondition.DRY)
+    r = get_presumed_bearing_pressure(SoilCategory.MEDIUM_SAND, RelativeDensity.MEDIUM, MoistureCondition.DRY)
     assert r.valid is True
     assert r.p_conv == pytest.approx(500.0)
 
 
 def test_fine_sand_dry_dense():
-    r = get_p_conv(SoilCategory.FINE_SAND, RelativeDensity.DENSE, MoistureCondition.DRY)
+    r = get_presumed_bearing_pressure(SoilCategory.FINE_SAND, RelativeDensity.DENSE, MoistureCondition.DRY)
     assert r.valid is True
     assert r.p_conv == pytest.approx(500.0)
 
 
 def test_fine_sand_moist_medium():
-    r = get_p_conv(SoilCategory.FINE_SAND, RelativeDensity.MEDIUM, MoistureCondition.MOIST)
+    r = get_presumed_bearing_pressure(SoilCategory.FINE_SAND, RelativeDensity.MEDIUM, MoistureCondition.MOIST)
     assert r.valid is True
     assert r.p_conv == pytest.approx(350.0)
 
 
 def test_fine_sand_very_moist_dense():
-    r = get_p_conv(SoilCategory.FINE_SAND, RelativeDensity.DENSE, MoistureCondition.VERY_MOIST)
+    r = get_presumed_bearing_pressure(SoilCategory.FINE_SAND, RelativeDensity.DENSE, MoistureCondition.VERY_MOIST)
     assert r.valid is True
     assert r.p_conv == pytest.approx(350.0)
 
 
 def test_fine_sand_saturated_medium():
-    r = get_p_conv(SoilCategory.FINE_SAND, RelativeDensity.MEDIUM, MoistureCondition.SATURATED)
+    r = get_presumed_bearing_pressure(SoilCategory.FINE_SAND, RelativeDensity.MEDIUM, MoistureCondition.SATURATED)
     assert r.valid is True
     assert r.p_conv == pytest.approx(250.0)
 
 
 def test_silty_sand_dry_dense():
-    r = get_p_conv(SoilCategory.SILTY_SAND, RelativeDensity.DENSE, MoistureCondition.DRY)
+    r = get_presumed_bearing_pressure(SoilCategory.SILTY_SAND, RelativeDensity.DENSE, MoistureCondition.DRY)
     assert r.valid is True
     assert r.p_conv == pytest.approx(350.0)
 
 
 def test_silty_sand_moist_medium():
-    r = get_p_conv(SoilCategory.SILTY_SAND, RelativeDensity.MEDIUM, MoistureCondition.MOIST)
+    r = get_presumed_bearing_pressure(SoilCategory.SILTY_SAND, RelativeDensity.MEDIUM, MoistureCondition.MOIST)
     assert r.valid is True
     assert r.p_conv == pytest.approx(200.0)
 
 
 def test_silty_sand_very_moist_dense():
-    r = get_p_conv(SoilCategory.SILTY_SAND, RelativeDensity.DENSE, MoistureCondition.VERY_MOIST)
+    r = get_presumed_bearing_pressure(SoilCategory.SILTY_SAND, RelativeDensity.DENSE, MoistureCondition.VERY_MOIST)
     assert r.valid is True
     assert r.p_conv == pytest.approx(200.0)
 
 
 def test_silty_sand_saturated_medium():
-    r = get_p_conv(SoilCategory.SILTY_SAND, RelativeDensity.MEDIUM, MoistureCondition.SATURATED)
+    r = get_presumed_bearing_pressure(SoilCategory.SILTY_SAND, RelativeDensity.MEDIUM, MoistureCondition.SATURATED)
     assert r.valid is True
     assert r.p_conv == pytest.approx(150.0)
 
@@ -830,38 +830,38 @@ def test_silty_sand_saturated_medium():
 # ── Source & type ─────────────────────────────────────────────────────────────
 
 def test_source_metadata():
-    r = get_p_conv(SoilCategory.COARSE_SAND, RelativeDensity.DENSE, MoistureCondition.DRY)
+    r = get_presumed_bearing_pressure(SoilCategory.COARSE_SAND, RelativeDensity.DENSE, MoistureCondition.DRY)
     assert r.source.code == "NP 112:2014"
     assert r.source.table == "Tabelul D.3"
 
 
 def test_result_type():
-    r = get_p_conv(SoilCategory.COARSE_SAND, RelativeDensity.DENSE, MoistureCondition.DRY)
-    assert isinstance(r, ConventionalPressureResult)
+    r = get_presumed_bearing_pressure(SoilCategory.COARSE_SAND, RelativeDensity.DENSE, MoistureCondition.DRY)
+    assert isinstance(r, PresumedBearingPressureResult)
 
 
 # ── Error cases ───────────────────────────────────────────────────────────────
 
 def test_invalid_category():
-    r = get_p_conv("invalid", RelativeDensity.DENSE, MoistureCondition.DRY)
+    r = get_presumed_bearing_pressure("invalid", RelativeDensity.DENSE, MoistureCondition.DRY)
     assert r.valid is False
     assert len(r.errors) == 1
 
 
 def test_invalid_relative_density():
-    r = get_p_conv(SoilCategory.COARSE_SAND, "invalid", MoistureCondition.DRY)
+    r = get_presumed_bearing_pressure(SoilCategory.COARSE_SAND, "invalid", MoistureCondition.DRY)
     assert r.valid is False
     assert len(r.errors) == 1
 
 
 def test_invalid_moisture_condition():
-    r = get_p_conv(SoilCategory.FINE_SAND, RelativeDensity.DENSE, "invalid")
+    r = get_presumed_bearing_pressure(SoilCategory.FINE_SAND, RelativeDensity.DENSE, "invalid")
     assert r.valid is False
     assert len(r.errors) == 1
 
 
 def test_non_sand_category_rejected():
-    r = get_p_conv(SoilCategory.ROCKY, RelativeDensity.DENSE, MoistureCondition.DRY)
+    r = get_presumed_bearing_pressure(SoilCategory.ROCKY, RelativeDensity.DENSE, MoistureCondition.DRY)
     assert r.valid is False
     assert len(r.errors) == 1
 ```
@@ -869,21 +869,21 @@ def test_non_sand_category_rejected():
 - [ ] **Step 2: Run to verify fail**
 
 ```
-pytest tests/test_np_112_2014_conventional_pressure_sands.py -v
+pytest tests/test_np_112_2014_presumed_bearing_pressure_sands.py -v
 ```
 
 Expected: FAIL with `ModuleNotFoundError`.
 
 - [ ] **Step 3: Implement modul**
 
-Creează `src/tabularium/np_112_2014/conventional_pressure_sands.py`:
+Creează `src/tabularium/np_112_2014/presumed_bearing_pressure_sands.py`:
 
 ```python
 from __future__ import annotations
 
 from ..enums import MoistureCondition, RelativeDensity, SoilCategory
 from ..models import CodeSource
-from . import ConventionalPressureResult
+from . import PresumedBearingPressureResult
 
 _SOURCE = CodeSource(code="NP 112:2014", table="Tabelul D.3")
 
@@ -943,18 +943,18 @@ _TABLE: dict[tuple[SoilCategory, MoistureCondition | None], dict[RelativeDensity
 }
 
 
-def get_p_conv(
+def get_presumed_bearing_pressure(
     soil_category: SoilCategory,
     relative_density: RelativeDensity,
     moisture_condition: MoistureCondition,
-) -> ConventionalPressureResult:
+) -> PresumedBearingPressureResult:
     """
     Returnează p̄_conv [kPa] pentru nisipuri conform NP 112:2014, Tabelul D.3.
 
     Pentru COARSE_SAND și MEDIUM_SAND, moisture_condition este acceptat
     dar nu influențează valoarea (tabelul are un singur rând per categorie).
     """
-    result = ConventionalPressureResult(source=_SOURCE)
+    result = PresumedBearingPressureResult(source=_SOURCE)
 
     try:
         soil_category     = SoilCategory(soil_category)
@@ -988,7 +988,7 @@ def get_p_conv(
 - [ ] **Step 4: Run tests**
 
 ```
-pytest tests/test_np_112_2014_conventional_pressure_sands.py -v
+pytest tests/test_np_112_2014_presumed_bearing_pressure_sands.py -v
 ```
 
 Expected: all PASS.
@@ -996,28 +996,28 @@ Expected: all PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/tabularium/np_112_2014/conventional_pressure_sands.py tests/test_np_112_2014_conventional_pressure_sands.py
-git commit -m "feat(np112): add conventional_pressure_sands (Tabelul D.3)"
+git add src/tabularium/np_112_2014/presumed_bearing_pressure_sands.py tests/test_np_112_2014_presumed_bearing_pressure_sands.py
+git commit -m "feat(np112): add presumed_bearing_pressure_sands (Tabelul D.3)"
 ```
 
 ---
 
-## Task 7: D.4 — `conventional_pressure_fines.py`
+## Task 7: D.4 — `presumed_bearing_pressure_fines.py`
 
 **Files:**
-- Create: `src/tabularium/np_112_2014/conventional_pressure_fines.py`
-- Create: `tests/test_np_112_2014_conventional_pressure_fines.py`
+- Create: `src/tabularium/np_112_2014/presumed_bearing_pressure_fines.py`
+- Create: `tests/test_np_112_2014_presumed_bearing_pressure_fines.py`
 
 - [ ] **Step 1: Write failing tests**
 
-Creează `tests/test_np_112_2014_conventional_pressure_fines.py`:
+Creează `tests/test_np_112_2014_presumed_bearing_pressure_fines.py`:
 
 ```python
 import pytest
-from tabularium.np_112_2014.conventional_pressure_fines import (
+from tabularium.np_112_2014.presumed_bearing_pressure_fines import (
     PlasticityClass,
-    ConventionalPressureResult,
-    get_p_conv,
+    PresumedBearingPressureResult,
+    get_presumed_bearing_pressure,
 )
 
 
@@ -1025,7 +1025,7 @@ from tabularium.np_112_2014.conventional_pressure_fines import (
 
 def test_low_plasticity_exact_node_upper_band():
     # LOW, e=0.5, IC=0.75 → exact node in upper band → 325
-    r = get_p_conv(PlasticityClass.LOW, void_ratio=0.5, consistency_index=0.75)
+    r = get_presumed_bearing_pressure(PlasticityClass.LOW, void_ratio=0.5, consistency_index=0.75)
     assert r.valid is True
     assert r.p_conv == pytest.approx(325.0)
     assert r.interpolated is False
@@ -1034,7 +1034,7 @@ def test_low_plasticity_exact_node_upper_band():
 
 def test_low_plasticity_exact_node_ic_1():
     # LOW, e=0.7, IC=1.0 → exact node → 300
-    r = get_p_conv(PlasticityClass.LOW, void_ratio=0.7, consistency_index=1.0)
+    r = get_presumed_bearing_pressure(PlasticityClass.LOW, void_ratio=0.7, consistency_index=1.0)
     assert r.valid is True
     assert r.p_conv == pytest.approx(300.0)
     assert r.interpolated is False
@@ -1042,7 +1042,7 @@ def test_low_plasticity_exact_node_ic_1():
 
 def test_low_plasticity_exact_node_lower_band():
     # LOW, e=0.5, IC=0.5 → exact node in lower band → 300
-    r = get_p_conv(PlasticityClass.LOW, void_ratio=0.5, consistency_index=0.5)
+    r = get_presumed_bearing_pressure(PlasticityClass.LOW, void_ratio=0.5, consistency_index=0.5)
     assert r.valid is True
     assert r.p_conv == pytest.approx(300.0)
     assert r.interpolated is False
@@ -1050,7 +1050,7 @@ def test_low_plasticity_exact_node_lower_band():
 
 def test_high_plasticity_exact_node():
     # HIGH, e=0.6, IC=1.0 → 525
-    r = get_p_conv(PlasticityClass.HIGH, void_ratio=0.6, consistency_index=1.0)
+    r = get_presumed_bearing_pressure(PlasticityClass.HIGH, void_ratio=0.6, consistency_index=1.0)
     assert r.valid is True
     assert r.p_conv == pytest.approx(525.0)
 
@@ -1059,7 +1059,7 @@ def test_high_plasticity_exact_node():
 
 def test_ic_0_75_uses_upper_band():
     # LOW, e=0.5, IC=0.75 → upper band, exact node → 325 (not lower band which also has 325 here)
-    r = get_p_conv(PlasticityClass.LOW, void_ratio=0.5, consistency_index=0.75)
+    r = get_presumed_bearing_pressure(PlasticityClass.LOW, void_ratio=0.5, consistency_index=0.75)
     assert r.valid is True
     assert r.p_conv == pytest.approx(325.0)
     assert r.interpolated is False
@@ -1070,7 +1070,7 @@ def test_ic_0_75_uses_upper_band():
 def test_low_plasticity_interpolate_e_only():
     # LOW, e=0.6 (midpoint [0.5,0.7]), IC=0.75 exact
     # upper band: e=0.5→325, e=0.7→285; at e=0.6 → (325+285)/2 = 305
-    r = get_p_conv(PlasticityClass.LOW, void_ratio=0.6, consistency_index=0.75)
+    r = get_presumed_bearing_pressure(PlasticityClass.LOW, void_ratio=0.6, consistency_index=0.75)
     assert r.valid is True
     assert r.p_conv == pytest.approx(305.0)
     assert r.interpolated is True
@@ -1079,7 +1079,7 @@ def test_low_plasticity_interpolate_e_only():
 def test_low_plasticity_interpolate_ic_only():
     # LOW, e=0.5 exact, IC=0.875 (midpoint [0.75,1.0])
     # upper band e=0.5: IC=0.75→325, IC=1.0→350; at IC=0.875 → (325+350)/2 = 337.5
-    r = get_p_conv(PlasticityClass.LOW, void_ratio=0.5, consistency_index=0.875)
+    r = get_presumed_bearing_pressure(PlasticityClass.LOW, void_ratio=0.5, consistency_index=0.875)
     assert r.valid is True
     assert r.p_conv == pytest.approx(337.5)
     assert r.interpolated is True
@@ -1090,7 +1090,7 @@ def test_medium_plasticity_bilinear():
     # At e=0.5, IC=0.875 → (325+350)/2 = 337.5
     # At e=0.7, IC=0.875 → (285+300)/2 = 292.5
     # At e=0.6 → (337.5+292.5)/2 = 315.0
-    r = get_p_conv(PlasticityClass.MEDIUM, void_ratio=0.6, consistency_index=0.875)
+    r = get_presumed_bearing_pressure(PlasticityClass.MEDIUM, void_ratio=0.6, consistency_index=0.875)
     assert r.valid is True
     assert r.p_conv == pytest.approx(315.0)
     assert r.interpolated is True
@@ -1099,33 +1099,33 @@ def test_medium_plasticity_bilinear():
 # ── Out-of-range ──────────────────────────────────────────────────────────────
 
 def test_ic_below_range():
-    r = get_p_conv(PlasticityClass.LOW, void_ratio=0.5, consistency_index=0.3)
+    r = get_presumed_bearing_pressure(PlasticityClass.LOW, void_ratio=0.5, consistency_index=0.3)
     assert r.valid is False
     assert len(r.errors) == 1
 
 
 def test_ic_above_range():
-    r = get_p_conv(PlasticityClass.LOW, void_ratio=0.5, consistency_index=1.1)
+    r = get_presumed_bearing_pressure(PlasticityClass.LOW, void_ratio=0.5, consistency_index=1.1)
     assert r.valid is False
     assert len(r.errors) == 1
 
 
 def test_e_above_limit_low():
     # LOW: e_max = 0.7
-    r = get_p_conv(PlasticityClass.LOW, void_ratio=0.8, consistency_index=0.8)
+    r = get_presumed_bearing_pressure(PlasticityClass.LOW, void_ratio=0.8, consistency_index=0.8)
     assert r.valid is False
     assert len(r.errors) == 1
 
 
 def test_e_below_minimum():
-    r = get_p_conv(PlasticityClass.LOW, void_ratio=0.3, consistency_index=0.8)
+    r = get_presumed_bearing_pressure(PlasticityClass.LOW, void_ratio=0.3, consistency_index=0.8)
     assert r.valid is False
     assert len(r.errors) == 1
 
 
 def test_e_at_limit_high():
     # HIGH: e_max = 1.1, e=1.1 is a data point → should be valid
-    r = get_p_conv(PlasticityClass.HIGH, void_ratio=1.1, consistency_index=1.0)
+    r = get_presumed_bearing_pressure(PlasticityClass.HIGH, void_ratio=1.1, consistency_index=1.0)
     assert r.valid is True
     assert r.p_conv == pytest.approx(300.0)
 
@@ -1133,18 +1133,18 @@ def test_e_at_limit_high():
 # ── Source & type ─────────────────────────────────────────────────────────────
 
 def test_source_metadata():
-    r = get_p_conv(PlasticityClass.LOW, void_ratio=0.5, consistency_index=0.75)
+    r = get_presumed_bearing_pressure(PlasticityClass.LOW, void_ratio=0.5, consistency_index=0.75)
     assert r.source.code == "NP 112:2014"
     assert r.source.table == "Tabelul D.4"
 
 
 def test_result_type():
-    r = get_p_conv(PlasticityClass.LOW, void_ratio=0.5, consistency_index=0.75)
-    assert isinstance(r, ConventionalPressureResult)
+    r = get_presumed_bearing_pressure(PlasticityClass.LOW, void_ratio=0.5, consistency_index=0.75)
+    assert isinstance(r, PresumedBearingPressureResult)
 
 
 def test_invalid_plasticity_class():
-    r = get_p_conv("invalid", void_ratio=0.5, consistency_index=0.75)
+    r = get_presumed_bearing_pressure("invalid", void_ratio=0.5, consistency_index=0.75)
     assert r.valid is False
     assert len(r.errors) == 1
 ```
@@ -1152,14 +1152,14 @@ def test_invalid_plasticity_class():
 - [ ] **Step 2: Run to verify fail**
 
 ```
-pytest tests/test_np_112_2014_conventional_pressure_fines.py -v
+pytest tests/test_np_112_2014_presumed_bearing_pressure_fines.py -v
 ```
 
 Expected: FAIL with `ModuleNotFoundError`.
 
 - [ ] **Step 3: Implement modul**
 
-Creează `src/tabularium/np_112_2014/conventional_pressure_fines.py`:
+Creează `src/tabularium/np_112_2014/presumed_bearing_pressure_fines.py`:
 
 ```python
 from __future__ import annotations
@@ -1169,7 +1169,7 @@ import bisect
 from ..enums import PlasticityClass
 from ..interpolation import interpolate_linear
 from ..models import CodeSource
-from . import ConventionalPressureResult
+from . import PresumedBearingPressureResult
 
 _SOURCE = CodeSource(code="NP 112:2014", table="Tabelul D.4")
 
@@ -1252,11 +1252,11 @@ def _interpolate_successive(grid: _SubGrid, e: float, ic: float) -> tuple[float 
     return lr0.value + t * (lr1.value - lr0.value), True
 
 
-def get_p_conv(
+def get_presumed_bearing_pressure(
     plasticity_class: PlasticityClass,
     void_ratio: float,
     consistency_index: float,
-) -> ConventionalPressureResult:
+) -> PresumedBearingPressureResult:
     """
     Returnează p̄_conv [kPa] pentru pământuri fine coezive
     conform NP 112:2014, Tabelul D.4.
@@ -1264,7 +1264,7 @@ def get_p_conv(
     Interpolare succesivă pe I_C și e în interiorul benzii selectate.
     Nu se interpolează cross-bandă (limita benzii: I_C = 0.75).
     """
-    result = ConventionalPressureResult(source=_SOURCE)
+    result = PresumedBearingPressureResult(source=_SOURCE)
 
     try:
         plasticity_class = PlasticityClass(plasticity_class)
@@ -1309,7 +1309,7 @@ def get_p_conv(
 - [ ] **Step 4: Run tests**
 
 ```
-pytest tests/test_np_112_2014_conventional_pressure_fines.py -v
+pytest tests/test_np_112_2014_presumed_bearing_pressure_fines.py -v
 ```
 
 Expected: all PASS.
@@ -1317,36 +1317,36 @@ Expected: all PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/tabularium/np_112_2014/conventional_pressure_fines.py tests/test_np_112_2014_conventional_pressure_fines.py
-git commit -m "feat(np112): add conventional_pressure_fines (Tabelul D.4)"
+git add src/tabularium/np_112_2014/presumed_bearing_pressure_fines.py tests/test_np_112_2014_presumed_bearing_pressure_fines.py
+git commit -m "feat(np112): add presumed_bearing_pressure_fines (Tabelul D.4)"
 ```
 
 ---
 
-## Task 8: D.5 — `conventional_pressure_fills.py`
+## Task 8: D.5 — `presumed_bearing_pressure_fills.py`
 
 **Files:**
-- Create: `src/tabularium/np_112_2014/conventional_pressure_fills.py`
-- Create: `tests/test_np_112_2014_conventional_pressure_fills.py`
+- Create: `src/tabularium/np_112_2014/presumed_bearing_pressure_fills.py`
+- Create: `tests/test_np_112_2014_presumed_bearing_pressure_fills.py`
 
 - [ ] **Step 1: Write failing tests**
 
-Creează `tests/test_np_112_2014_conventional_pressure_fills.py`:
+Creează `tests/test_np_112_2014_presumed_bearing_pressure_fills.py`:
 
 ```python
 import pytest
-from tabularium.np_112_2014.conventional_pressure_fills import (
+from tabularium.np_112_2014.presumed_bearing_pressure_fills import (
     FillType,
     FillSoilType,
-    ConventionalPressureResult,
-    get_p_conv,
+    PresumedBearingPressureResult,
+    get_presumed_bearing_pressure,
 )
 
 
 # ── Exact lookups la noduri (Sr ≤ 0.5 și Sr ≥ 0.8) ──────────────────────────
 
 def test_controlled_sandy_sr_low():
-    r = get_p_conv(FillType.CONTROLLED_COMPACTED, FillSoilType.SANDY_SLAG, saturation_degree=0.3)
+    r = get_presumed_bearing_pressure(FillType.CONTROLLED_COMPACTED, FillSoilType.SANDY_SLAG, saturation_degree=0.3)
     assert r.valid is True
     assert r.p_conv == pytest.approx(250.0)
     assert r.interpolated is False
@@ -1354,32 +1354,32 @@ def test_controlled_sandy_sr_low():
 
 
 def test_controlled_sandy_sr_high():
-    r = get_p_conv(FillType.CONTROLLED_COMPACTED, FillSoilType.SANDY_SLAG, saturation_degree=0.9)
+    r = get_presumed_bearing_pressure(FillType.CONTROLLED_COMPACTED, FillSoilType.SANDY_SLAG, saturation_degree=0.9)
     assert r.valid is True
     assert r.p_conv == pytest.approx(200.0)
     assert r.interpolated is False
 
 
 def test_controlled_silty_sr_low():
-    r = get_p_conv(FillType.CONTROLLED_COMPACTED, FillSoilType.SILTY_FINE, saturation_degree=0.2)
+    r = get_presumed_bearing_pressure(FillType.CONTROLLED_COMPACTED, FillSoilType.SILTY_FINE, saturation_degree=0.2)
     assert r.valid is True
     assert r.p_conv == pytest.approx(180.0)
 
 
 def test_controlled_silty_sr_high():
-    r = get_p_conv(FillType.CONTROLLED_COMPACTED, FillSoilType.SILTY_FINE, saturation_degree=1.0)
+    r = get_presumed_bearing_pressure(FillType.CONTROLLED_COMPACTED, FillSoilType.SILTY_FINE, saturation_degree=1.0)
     assert r.valid is True
     assert r.p_conv == pytest.approx(150.0)
 
 
 def test_known_origin_sandy_sr_low():
-    r = get_p_conv(FillType.KNOWN_ORIGIN, FillSoilType.SANDY_SLAG, saturation_degree=0.0)
+    r = get_presumed_bearing_pressure(FillType.KNOWN_ORIGIN, FillSoilType.SANDY_SLAG, saturation_degree=0.0)
     assert r.valid is True
     assert r.p_conv == pytest.approx(180.0)
 
 
 def test_known_origin_silty_sr_high():
-    r = get_p_conv(FillType.KNOWN_ORIGIN, FillSoilType.SILTY_FINE, saturation_degree=0.8)
+    r = get_presumed_bearing_pressure(FillType.KNOWN_ORIGIN, FillSoilType.SILTY_FINE, saturation_degree=0.8)
     assert r.valid is True
     assert r.p_conv == pytest.approx(100.0)
     assert r.interpolated is False
@@ -1389,7 +1389,7 @@ def test_known_origin_silty_sr_high():
 
 def test_controlled_sandy_sr_midpoint():
     # Sr=0.65 midpoint [0.5, 0.8] → (250+200)/2 = 225
-    r = get_p_conv(FillType.CONTROLLED_COMPACTED, FillSoilType.SANDY_SLAG, saturation_degree=0.65)
+    r = get_presumed_bearing_pressure(FillType.CONTROLLED_COMPACTED, FillSoilType.SANDY_SLAG, saturation_degree=0.65)
     assert r.valid is True
     assert r.p_conv == pytest.approx(225.0)
     assert r.interpolated is True
@@ -1397,7 +1397,7 @@ def test_controlled_sandy_sr_midpoint():
 
 def test_known_origin_silty_interpolated():
     # Sr=0.65 midpoint [0.5, 0.8] → (120+100)/2 = 110
-    r = get_p_conv(FillType.KNOWN_ORIGIN, FillSoilType.SILTY_FINE, saturation_degree=0.65)
+    r = get_presumed_bearing_pressure(FillType.KNOWN_ORIGIN, FillSoilType.SILTY_FINE, saturation_degree=0.65)
     assert r.valid is True
     assert r.p_conv == pytest.approx(110.0)
     assert r.interpolated is True
@@ -1405,7 +1405,7 @@ def test_known_origin_silty_interpolated():
 
 def test_sr_at_lower_node():
     # Sr=0.5 exact node
-    r = get_p_conv(FillType.CONTROLLED_COMPACTED, FillSoilType.SANDY_SLAG, saturation_degree=0.5)
+    r = get_presumed_bearing_pressure(FillType.CONTROLLED_COMPACTED, FillSoilType.SANDY_SLAG, saturation_degree=0.5)
     assert r.valid is True
     assert r.p_conv == pytest.approx(250.0)
     assert r.interpolated is False
@@ -1413,7 +1413,7 @@ def test_sr_at_lower_node():
 
 def test_sr_at_upper_node():
     # Sr=0.8 exact node
-    r = get_p_conv(FillType.CONTROLLED_COMPACTED, FillSoilType.SANDY_SLAG, saturation_degree=0.8)
+    r = get_presumed_bearing_pressure(FillType.CONTROLLED_COMPACTED, FillSoilType.SANDY_SLAG, saturation_degree=0.8)
     assert r.valid is True
     assert r.p_conv == pytest.approx(200.0)
     assert r.interpolated is False
@@ -1422,13 +1422,13 @@ def test_sr_at_upper_node():
 # ── Out-of-range Sr ───────────────────────────────────────────────────────────
 
 def test_sr_negative():
-    r = get_p_conv(FillType.CONTROLLED_COMPACTED, FillSoilType.SANDY_SLAG, saturation_degree=-0.1)
+    r = get_presumed_bearing_pressure(FillType.CONTROLLED_COMPACTED, FillSoilType.SANDY_SLAG, saturation_degree=-0.1)
     assert r.valid is False
     assert len(r.errors) == 1
 
 
 def test_sr_above_one():
-    r = get_p_conv(FillType.CONTROLLED_COMPACTED, FillSoilType.SANDY_SLAG, saturation_degree=1.1)
+    r = get_presumed_bearing_pressure(FillType.CONTROLLED_COMPACTED, FillSoilType.SANDY_SLAG, saturation_degree=1.1)
     assert r.valid is False
     assert len(r.errors) == 1
 
@@ -1436,24 +1436,24 @@ def test_sr_above_one():
 # ── Source & type ─────────────────────────────────────────────────────────────
 
 def test_source_metadata():
-    r = get_p_conv(FillType.CONTROLLED_COMPACTED, FillSoilType.SANDY_SLAG, saturation_degree=0.3)
+    r = get_presumed_bearing_pressure(FillType.CONTROLLED_COMPACTED, FillSoilType.SANDY_SLAG, saturation_degree=0.3)
     assert r.source.code == "NP 112:2014"
     assert r.source.table == "Tabelul D.5"
 
 
 def test_result_type():
-    r = get_p_conv(FillType.CONTROLLED_COMPACTED, FillSoilType.SANDY_SLAG, saturation_degree=0.3)
-    assert isinstance(r, ConventionalPressureResult)
+    r = get_presumed_bearing_pressure(FillType.CONTROLLED_COMPACTED, FillSoilType.SANDY_SLAG, saturation_degree=0.3)
+    assert isinstance(r, PresumedBearingPressureResult)
 
 
 def test_invalid_fill_type():
-    r = get_p_conv("invalid", FillSoilType.SANDY_SLAG, saturation_degree=0.3)
+    r = get_presumed_bearing_pressure("invalid", FillSoilType.SANDY_SLAG, saturation_degree=0.3)
     assert r.valid is False
     assert len(r.errors) == 1
 
 
 def test_invalid_fill_soil_type():
-    r = get_p_conv(FillType.CONTROLLED_COMPACTED, "invalid", saturation_degree=0.3)
+    r = get_presumed_bearing_pressure(FillType.CONTROLLED_COMPACTED, "invalid", saturation_degree=0.3)
     assert r.valid is False
     assert len(r.errors) == 1
 ```
@@ -1461,14 +1461,14 @@ def test_invalid_fill_soil_type():
 - [ ] **Step 2: Run to verify fail**
 
 ```
-pytest tests/test_np_112_2014_conventional_pressure_fills.py -v
+pytest tests/test_np_112_2014_presumed_bearing_pressure_fills.py -v
 ```
 
 Expected: FAIL with `ModuleNotFoundError`.
 
 - [ ] **Step 3: Implement modul**
 
-Creează `src/tabularium/np_112_2014/conventional_pressure_fills.py`:
+Creează `src/tabularium/np_112_2014/presumed_bearing_pressure_fills.py`:
 
 ```python
 from __future__ import annotations
@@ -1476,7 +1476,7 @@ from __future__ import annotations
 from ..enums import FillSoilType, FillType
 from ..interpolation import interpolate_linear
 from ..models import CodeSource
-from . import ConventionalPressureResult
+from . import PresumedBearingPressureResult
 
 _SOURCE = CodeSource(code="NP 112:2014", table="Tabelul D.5")
 
@@ -1499,11 +1499,11 @@ _SR_NODE_LOW  = 0.5
 _SR_NODE_HIGH = 0.8
 
 
-def get_p_conv(
+def get_presumed_bearing_pressure(
     fill_type: FillType,
     fill_soil_type: FillSoilType,
     saturation_degree: float,
-) -> ConventionalPressureResult:
+) -> PresumedBearingPressureResult:
     """
     Returnează p̄_conv [kPa] pentru umpluturi conform NP 112:2014, Tabelul D.5.
 
@@ -1511,7 +1511,7 @@ def get_p_conv(
     S_r < 0.5 → valoarea nodului 0.5; S_r > 0.8 → valoarea nodului 0.8.
     S_r în afara [0, 1] → eroare.
     """
-    result = ConventionalPressureResult(source=_SOURCE)
+    result = PresumedBearingPressureResult(source=_SOURCE)
 
     try:
         fill_type      = FillType(fill_type)
@@ -1550,7 +1550,7 @@ def get_p_conv(
 - [ ] **Step 4: Run tests**
 
 ```
-pytest tests/test_np_112_2014_conventional_pressure_fills.py -v
+pytest tests/test_np_112_2014_presumed_bearing_pressure_fills.py -v
 ```
 
 Expected: all PASS.
@@ -1558,8 +1558,8 @@ Expected: all PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/tabularium/np_112_2014/conventional_pressure_fills.py tests/test_np_112_2014_conventional_pressure_fills.py
-git commit -m "feat(np112): add conventional_pressure_fills (Tabelul D.5)"
+git add src/tabularium/np_112_2014/presumed_bearing_pressure_fills.py tests/test_np_112_2014_presumed_bearing_pressure_fills.py
+git commit -m "feat(np112): add presumed_bearing_pressure_fills (Tabelul D.5)"
 ```
 
 ---
@@ -1575,48 +1575,48 @@ git commit -m "feat(np112): add conventional_pressure_fills (Tabelul D.5)"
 În `src/tabularium/registry.py`, adaugă importurile după cele existente:
 
 ```python
-from .np_112_2014.conventional_pressure_rocks import get_p_conv as _np112_rocks
-from .np_112_2014.conventional_pressure_boulders import get_p_conv as _np112_boulders
-from .np_112_2014.conventional_pressure_gravels import get_p_conv as _np112_gravels
-from .np_112_2014.conventional_pressure_sands import get_p_conv as _np112_sands
-from .np_112_2014.conventional_pressure_fines import get_p_conv as _np112_fines
-from .np_112_2014.conventional_pressure_fills import get_p_conv as _np112_fills
+from .np_112_2014.presumed_bearing_pressure_rocks import get_presumed_bearing_pressure as _np112_rocks
+from .np_112_2014.presumed_bearing_pressure_boulders import get_presumed_bearing_pressure as _np112_boulders
+from .np_112_2014.presumed_bearing_pressure_gravels import get_presumed_bearing_pressure as _np112_gravels
+from .np_112_2014.presumed_bearing_pressure_sands import get_presumed_bearing_pressure as _np112_sands
+from .np_112_2014.presumed_bearing_pressure_fines import get_presumed_bearing_pressure as _np112_fines
+from .np_112_2014.presumed_bearing_pressure_fills import get_presumed_bearing_pressure as _np112_fills
 ```
 
 Adaugă în dicționarul `REGISTRY`:
 
 ```python
-    "np_112_2014.conventional_pressure_rocks": TableEntry(
+    "np_112_2014.presumed_bearing_pressure_rocks": TableEntry(
         normative="NP 112:2014",
         table_id="D.1",
         description="Presiuni convenționale p̄_conv [kPa] pentru roci stâncoase și semi-stâncoase",
         lookup_fn=_np112_rocks,
     ),
-    "np_112_2014.conventional_pressure_boulders": TableEntry(
+    "np_112_2014.presumed_bearing_pressure_boulders": TableEntry(
         normative="NP 112:2014",
         table_id="D.2",
         description="Presiuni convenționale p̄_conv [kPa] pentru pământuri foarte grosiere",
         lookup_fn=_np112_boulders,
     ),
-    "np_112_2014.conventional_pressure_gravels": TableEntry(
+    "np_112_2014.presumed_bearing_pressure_gravels": TableEntry(
         normative="NP 112:2014",
         table_id="D.2",
         description="Presiuni convenționale p̄_conv [kPa] pentru pământuri grosiere (pietrișuri)",
         lookup_fn=_np112_gravels,
     ),
-    "np_112_2014.conventional_pressure_sands": TableEntry(
+    "np_112_2014.presumed_bearing_pressure_sands": TableEntry(
         normative="NP 112:2014",
         table_id="D.3",
         description="Presiuni convenționale p̄_conv [kPa] pentru nisipuri",
         lookup_fn=_np112_sands,
     ),
-    "np_112_2014.conventional_pressure_fines": TableEntry(
+    "np_112_2014.presumed_bearing_pressure_fines": TableEntry(
         normative="NP 112:2014",
         table_id="D.4",
         description="Presiuni convenționale p̄_conv [kPa] pentru pământuri fine coezive",
         lookup_fn=_np112_fines,
     ),
-    "np_112_2014.conventional_pressure_fills": TableEntry(
+    "np_112_2014.presumed_bearing_pressure_fills": TableEntry(
         normative="NP 112:2014",
         table_id="D.5",
         description="Presiuni convenționale p̄_conv [kPa] pentru umpluturi",
@@ -1638,24 +1638,24 @@ Expected: PASS (testele existente nu se schimbă).
 
 ```
 ├── np_112_2014/
-│   ├── __init__.py                          # ConventionalPressureResult
-│   ├── conventional_pressure_rocks.py       # Tabelul D.1 — roci stâncoase și semi-stâncoase
-│   ├── conventional_pressure_boulders.py    # Tabelul D.2 — pământuri foarte grosiere
-│   ├── conventional_pressure_gravels.py     # Tabelul D.2 — pământuri grosiere (pietrișuri)
-│   ├── conventional_pressure_sands.py       # Tabelul D.3 — nisipuri
-│   ├── conventional_pressure_fines.py       # Tabelul D.4 — pământuri fine coezive
-│   └── conventional_pressure_fills.py       # Tabelul D.5 — umpluturi
+│   ├── __init__.py                          # PresumedBearingPressureResult
+│   ├── presumed_bearing_pressure_rocks.py       # Tabelul D.1 — roci stâncoase și semi-stâncoase
+│   ├── presumed_bearing_pressure_boulders.py    # Tabelul D.2 — pământuri foarte grosiere
+│   ├── presumed_bearing_pressure_gravels.py     # Tabelul D.2 — pământuri grosiere (pietrișuri)
+│   ├── presumed_bearing_pressure_sands.py       # Tabelul D.3 — nisipuri
+│   ├── presumed_bearing_pressure_fines.py       # Tabelul D.4 — pământuri fine coezive
+│   └── presumed_bearing_pressure_fills.py       # Tabelul D.5 — umpluturi
 ```
 
 Actualizează și secțiunea `tests/`:
 
 ```
-├── test_np_112_2014_conventional_pressure_rocks.py
-├── test_np_112_2014_conventional_pressure_boulders.py
-├── test_np_112_2014_conventional_pressure_gravels.py
-├── test_np_112_2014_conventional_pressure_sands.py
-├── test_np_112_2014_conventional_pressure_fines.py
-└── test_np_112_2014_conventional_pressure_fills.py
+├── test_np_112_2014_presumed_bearing_pressure_rocks.py
+├── test_np_112_2014_presumed_bearing_pressure_boulders.py
+├── test_np_112_2014_presumed_bearing_pressure_gravels.py
+├── test_np_112_2014_presumed_bearing_pressure_sands.py
+├── test_np_112_2014_presumed_bearing_pressure_fines.py
+└── test_np_112_2014_presumed_bearing_pressure_fills.py
 ```
 
 - [ ] **Step 4: Rulează toate testele**
@@ -1670,5 +1670,5 @@ Expected: toate PASS.
 
 ```bash
 git add src/tabularium/registry.py CLAUDE.md
-git commit -m "feat(registry): register NP 112:2014 conventional pressure tables D.1–D.5"
+git commit -m "feat(registry): register NP 112:2014 presumed bearing pressure tables D.1–D.5"
 ```
