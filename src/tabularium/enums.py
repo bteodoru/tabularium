@@ -36,10 +36,10 @@ class RelativeDensity(str, Enum):
 
 
 class MoistureCondition(str, Enum):
-    DRY        = "dry"
-    MOIST      = "moist"
-    VERY_MOIST = "very_moist"
-    SATURATED  = "saturated"
+    DRY        = "dry"         # uscat
+    MOIST      = "moist"       # umed
+    VERY_MOIST = "very_moist"  # foarte umed
+    SATURATED  = "saturated"   # saturat
 
 
 class PlasticityClass(str, Enum):
@@ -49,8 +49,8 @@ class PlasticityClass(str, Enum):
 
 
 class FillType(str, Enum):
-    CONTROLLED_COMPACTED = "controlled_compacted"
-    KNOWN_ORIGIN         = "known_origin"
+    CONTROLLED_COMPACTED = "controlled_compacted"  # umpluturi compactate controlate
+    KNOWN_ORIGIN         = "known_origin"          # umpluturi de proveniență cunoscută
 
 
 class FillSoilType(str, Enum):
