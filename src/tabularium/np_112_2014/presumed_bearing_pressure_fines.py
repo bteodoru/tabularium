@@ -12,39 +12,39 @@ _SOURCE = CodeSource(code="NP 112:2014", table="Tabelul D.4")
 # _SubGrid[e][I_C] = p_conv
 _SubGrid = dict[float, dict[float, float]]
 
-# _TABLE[PlasticityClass]["lower" | "upper"][e][I_C] = p_conv
-# "lower": I_C ∈ [0.5, 0.75)   "upper": I_C ∈ [0.75, 1.0]
+# _TABLE[PlasticityClass]["medium_to_firm" | "stiff_to_hard"][e][I_C] = p_conv
+# "medium_to_firm": I_C ∈ [0.5, 0.75)   "stiff_to_hard": I_C ∈ [0.75, 1.0]
 _TABLE: dict[PlasticityClass, dict[str, _SubGrid]] = {
     PlasticityClass.LOW: {
-        "lower": {
+        "medium_to_firm": {
             0.5: {0.50: 300.0, 0.75: 325.0},
             0.7: {0.50: 275.0, 0.75: 285.0},
         },
-        "upper": {
+        "stiff_to_hard": {
             0.5: {0.75: 325.0, 1.00: 350.0},
             0.7: {0.75: 285.0, 1.00: 300.0},
         },
     },
     PlasticityClass.MEDIUM: {
-        "lower": {
+        "medium_to_firm": {
             0.5: {0.50: 300.0, 0.75: 325.0},
             0.7: {0.50: 275.0, 0.75: 285.0},
             1.0: {0.50: 200.0, 0.75: 225.0},
         },
-        "upper": {
+        "stiff_to_hard": {
             0.5: {0.75: 325.0, 1.00: 350.0},
             0.7: {0.75: 285.0, 1.00: 300.0},
             1.0: {0.75: 225.0, 1.00: 250.0},
         },
     },
     PlasticityClass.HIGH: {
-        "lower": {
+        "medium_to_firm": {
             0.5: {0.50: 550.0, 0.75: 600.0},
             0.6: {0.50: 450.0, 0.75: 485.0},
             0.8: {0.50: 300.0, 0.75: 325.0},
             1.1: {0.50: 225.0, 0.75: 260.0},
         },
-        "upper": {
+        "stiff_to_hard": {
             0.5: {0.75: 600.0, 1.00: 650.0},
             0.6: {0.75: 485.0, 1.00: 525.0},
             0.8: {0.75: 325.0, 1.00: 350.0},
@@ -124,7 +124,7 @@ def get_presumed_bearing_pressure(
         )
         return result
 
-    band = "upper" if consistency_index >= _IC_BAND_BOUNDARY else "lower"
+    band = "stiff_to_hard" if consistency_index >= _IC_BAND_BOUNDARY else "medium_to_firm"
     grid = _TABLE[plasticity_class][band]
 
     value, interpolated = _interpolate_successive(grid, e=void_ratio, ic=consistency_index)
