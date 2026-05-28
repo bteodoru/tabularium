@@ -13,6 +13,13 @@ _SAND_CATEGORIES = {
     SoilCategory.SILTY_SAND,
 }
 
+_SOIL_TYPES: dict[SoilCategory, SoilType] = {
+    SoilCategory.COARSE_SAND: SoilType.NON_COHESIVE,
+    SoilCategory.MEDIUM_SAND: SoilType.NON_COHESIVE,
+    SoilCategory.FINE_SAND:   SoilType.NON_COHESIVE,
+    SoilCategory.SILTY_SAND:  SoilType.COHESIVE,
+}
+
 # Categorii fără diferențiere pe umiditate: orice MoistureCondition e acceptat
 _MOISTURE_INDEPENDENT = {SoilCategory.COARSE_SAND, SoilCategory.MEDIUM_SAND}
 
@@ -90,7 +97,7 @@ def get_presumed_bearing_pressure(
         )
         return result
 
-    result.soil_type = SoilType.NON_COHESIVE
+    result.soil_type = _SOIL_TYPES[soil_category]
 
     key_moisture = None if soil_category in _MOISTURE_INDEPENDENT else moisture_condition
     row = _TABLE.get((soil_category, key_moisture))
