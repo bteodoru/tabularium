@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from ..enums import SoilType
 from ..models import LookupResult
 
 
@@ -9,6 +10,7 @@ from ..models import LookupResult
 class PresumedBearingPressureResult(LookupResult):
     p_conv: float | None = None
     p_conv_range: tuple[float, float] | None = None
+    soil_type: SoilType | None = None
 
     @property
     def is_resolved(self) -> bool:

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..enums import MoistureCondition, RelativeDensity, SoilCategory
+from ..enums import MoistureCondition, RelativeDensity, SoilCategory, get_soil_type
 from ..models import CodeSource
 from . import PresumedBearingPressureResult
 
@@ -89,6 +89,8 @@ def get_presumed_bearing_pressure(
             "Folosiți modulul corespunzător categoriei de sol."
         )
         return result
+
+    result.soil_type = get_soil_type(soil_category)
 
     key_moisture = None if soil_category in _MOISTURE_INDEPENDENT else moisture_condition
     row = _TABLE.get((soil_category, key_moisture))

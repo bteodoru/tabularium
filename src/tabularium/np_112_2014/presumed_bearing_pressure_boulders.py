@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..enums import SoilCategory
+from ..enums import SoilCategory, get_soil_type
 from ..interpolation import interpolate_linear
 from ..models import CodeSource
 from . import PresumedBearingPressureResult
@@ -45,6 +45,8 @@ def get_presumed_bearing_pressure(
             "Folosiți modulul corespunzător categoriei de sol."
         )
         return result
+
+    result.soil_type = get_soil_type(soil_category)
 
     if soil_category in _FIXED:
         result.p_conv = _FIXED[soil_category]

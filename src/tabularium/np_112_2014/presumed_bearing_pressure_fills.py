@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..enums import FillSoilType, FillType
+from ..enums import FillSoilType, FillType, SoilType
 from ..interpolation import interpolate_linear
 from ..models import CodeSource
 from . import PresumedBearingPressureResult
@@ -18,6 +18,11 @@ _TABLE: dict[FillType, dict[FillSoilType, dict[float, float]]] = {
         FillSoilType.SANDY_SLAG: {0.5: 180.0, 0.8: 150.0},
         FillSoilType.SILTY_FINE: {0.5: 120.0, 0.8: 100.0},
     },
+}
+
+_FILL_SOIL_TYPE: dict[FillSoilType, SoilType] = {
+    FillSoilType.SANDY_SLAG: SoilType.NON_COHESIVE,
+    FillSoilType.SILTY_FINE: SoilType.COHESIVE,
 }
 
 _SR_MIN = 0.0
@@ -53,6 +58,8 @@ def get_presumed_bearing_pressure(
             f"domeniului fizic [{_SR_MIN}, {_SR_MAX}]."
         )
         return result
+
+    result.soil_type = _FILL_SOIL_TYPE[fill_soil_type]
 
     knots = _TABLE[fill_type][fill_soil_type]
 
