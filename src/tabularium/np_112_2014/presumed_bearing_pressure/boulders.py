@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...enums import SoilCategory, get_soil_type
+from ...enums import SoilCategory, SoilType
 from ...interpolation import interpolate_linear
 from ...models import CodeSource
 from . import PresumedBearingPressureResult
@@ -16,6 +16,11 @@ _FIXED: dict[SoilCategory, float] = {
 # Noduri pentru interpolare pe I_C: {I_C: p_conv}
 _INTERPOLABLE: dict[SoilCategory, dict[float, float]] = {
     SoilCategory.BOULDER_CLAY_FILL: {0.5: 350.0, 1.0: 600.0},
+}
+
+_SOIL_TYPES: dict[SoilCategory, SoilType] = {
+    SoilCategory.BOULDER_GRAVEL_FILL: SoilType.NON_COHESIVE,
+    SoilCategory.BOULDER_CLAY_FILL:   SoilType.COHESIVE,
 }
 
 _IC_RANGE_WARNING = "Furnizați consistency_index (I_C) pentru a rezolva valoarea exactă."
@@ -46,7 +51,7 @@ def get_presumed_bearing_pressure(
         )
         return result
 
-    result.soil_type = get_soil_type(soil_category)
+    result.soil_type = _SOIL_TYPES[soil_category]
 
     if soil_category in _FIXED:
         result.p_conv = _FIXED[soil_category]

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...enums import SoilCategory, get_soil_type
+from ...enums import SoilCategory
 from ...models import CodeSource
 from . import PresumedBearingPressureResult
 
@@ -41,7 +41,7 @@ def get_presumed_bearing_pressure(soil_category: SoilCategory) -> PresumedBearin
         return result
 
     result.p_conv_range = _TABLE[soil_category]
-    result.soil_type = get_soil_type(soil_category)
+    result.soil_type = None
     result.warnings.append(_WARNING)
     result.valid = True
     return result

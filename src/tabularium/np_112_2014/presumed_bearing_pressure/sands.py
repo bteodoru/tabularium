@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...enums import MoistureCondition, RelativeDensity, SoilCategory, get_soil_type
+from ...enums import MoistureCondition, RelativeDensity, SoilCategory, SoilType
 from ...models import CodeSource
 from . import PresumedBearingPressureResult
 
@@ -90,7 +90,7 @@ def get_presumed_bearing_pressure(
         )
         return result
 
-    result.soil_type = get_soil_type(soil_category)
+    result.soil_type = SoilType.NON_COHESIVE
 
     key_moisture = None if soil_category in _MOISTURE_INDEPENDENT else moisture_condition
     row = _TABLE.get((soil_category, key_moisture))

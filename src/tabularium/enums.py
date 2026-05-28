@@ -61,33 +61,3 @@ class FillSoilType(str, Enum):
 class SoilType(str, Enum):
     COHESIVE     = "cohesive"
     NON_COHESIVE = "non_cohesive"
-
-
-# None pentru roci — corecțiile din metoda prescriptivă nu se aplică pe baza acestei axe
-_SOIL_TYPE: dict[SoilCategory, SoilType | None] = {
-    # NP 122:2010
-    SoilCategory.GRAVEL_COARSE_SAND:        SoilType.NON_COHESIVE,
-    SoilCategory.GRAVEL_COARSE_MEDIUM_SAND: SoilType.NON_COHESIVE,
-    SoilCategory.MEDIUM_SAND:               SoilType.NON_COHESIVE,
-    SoilCategory.FINE_SAND:                 SoilType.NON_COHESIVE,
-    SoilCategory.SILTY_SAND:                SoilType.NON_COHESIVE,
-    # NP 112:2014 D.1 — roci
-    SoilCategory.ROCKY:                     None,
-    SoilCategory.SEMI_ROCKY_MARL:           None,
-    SoilCategory.SEMI_ROCKY_SHALE:          None,
-    # NP 112:2014 D.2 — boulders
-    SoilCategory.BOULDER_GRAVEL_FILL:       SoilType.NON_COHESIVE,
-    SoilCategory.BOULDER_CLAY_FILL:         SoilType.COHESIVE,
-    # NP 112:2014 D.2 — gravels
-    SoilCategory.GRAVEL_CLEAN_CRYSTAL:      SoilType.NON_COHESIVE,
-    SoilCategory.GRAVEL_WITH_SAND:          SoilType.NON_COHESIVE,
-    SoilCategory.GRAVEL_SEDIMENTARY:        SoilType.NON_COHESIVE,
-    SoilCategory.GRAVEL_SILTY_SAND:         SoilType.NON_COHESIVE,
-    # NP 112:2014 D.3 — sands
-    SoilCategory.COARSE_SAND:               SoilType.NON_COHESIVE,
-}
-
-
-def get_soil_type(category: SoilCategory) -> SoilType | None:
-    """Returnează tipul de sol (cohesiv/necohesiv) sau None pentru roci."""
-    return _SOIL_TYPE[SoilCategory(category)]
