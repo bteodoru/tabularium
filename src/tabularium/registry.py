@@ -12,12 +12,12 @@ from .np_122_2010.indicative_deformation_modulus_non_cohesive import (
 from .np_122_2010.indicative_deformation_modulus_cohesive import (
     get_deformation_modulus as _np122_deformation_cohesive,
 )
-from .np_112_2014.presumed_bearing_pressure_rocks import get_presumed_bearing_pressure as _np112_rocks
-from .np_112_2014.presumed_bearing_pressure_boulders import get_presumed_bearing_pressure as _np112_boulders
-from .np_112_2014.presumed_bearing_pressure_gravels import get_presumed_bearing_pressure as _np112_gravels
-from .np_112_2014.presumed_bearing_pressure_sands import get_presumed_bearing_pressure as _np112_sands
-from .np_112_2014.presumed_bearing_pressure_fines import get_presumed_bearing_pressure as _np112_fines
-from .np_112_2014.presumed_bearing_pressure_fills import get_presumed_bearing_pressure as _np112_fills
+from .np_112_2014.presumed_bearing_pressure.rocks import get_presumed_bearing_pressure as _np112_rocks
+from .np_112_2014.presumed_bearing_pressure.boulders import get_presumed_bearing_pressure as _np112_boulders
+from .np_112_2014.presumed_bearing_pressure.gravels import get_presumed_bearing_pressure as _np112_gravels
+from .np_112_2014.presumed_bearing_pressure.sands import get_presumed_bearing_pressure as _np112_sands
+from .np_112_2014.presumed_bearing_pressure.fines import get_presumed_bearing_pressure as _np112_fines
+from .np_112_2014.presumed_bearing_pressure.fills import get_presumed_bearing_pressure as _np112_fills
 
 
 @dataclass

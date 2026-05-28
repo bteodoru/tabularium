@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ..enums import MoistureCondition, RelativeDensity, SoilCategory, get_soil_type
-from ..models import CodeSource
+from ...enums import MoistureCondition, RelativeDensity, SoilCategory, get_soil_type
+from ...models import CodeSource
 from . import PresumedBearingPressureResult
 
 _SOURCE = CodeSource(code="NP 112:2014", table="Tabelul D.3")

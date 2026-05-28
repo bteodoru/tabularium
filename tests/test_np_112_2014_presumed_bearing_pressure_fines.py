@@ -1,5 +1,5 @@
 import pytest
-from tabularium.np_112_2014.presumed_bearing_pressure_fines import (
+from tabularium.np_112_2014.presumed_bearing_pressure.fines import (
     PlasticityClass,
     PresumedBearingPressureResult,
     get_presumed_bearing_pressure,

@@ -1,5 +1,5 @@
 import pytest
-from tabularium.np_112_2014.presumed_bearing_pressure_sands import (
+from tabularium.np_112_2014.presumed_bearing_pressure.sands import (
     SoilCategory,
     RelativeDensity,
     MoistureCondition,

@@ -1,5 +1,5 @@
 import pytest
-from tabularium.np_112_2014.presumed_bearing_pressure_boulders import (
+from tabularium.np_112_2014.presumed_bearing_pressure.boulders import (
     SoilCategory,
     PresumedBearingPressureResult,
     get_presumed_bearing_pressure,

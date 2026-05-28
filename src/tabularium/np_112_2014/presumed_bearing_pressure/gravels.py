@@ -1,21 +1,27 @@
 from __future__ import annotations
 
-from ..enums import SoilCategory, get_soil_type
-from ..interpolation import interpolate_linear
-from ..models import CodeSource
+from ...enums import SoilCategory, get_soil_type
+from ...interpolation import interpolate_linear
+from ...models import CodeSource
 from . import PresumedBearingPressureResult
 
 _SOURCE = CodeSource(code="NP 112:2014", table="Tabelul D.2")
 
-_BOULDER_CATEGORIES = {SoilCategory.BOULDER_GRAVEL_FILL, SoilCategory.BOULDER_CLAY_FILL}
-
-_FIXED: dict[SoilCategory, float] = {
-    SoilCategory.BOULDER_GRAVEL_FILL: 750.0,
+_GRAVEL_CATEGORIES = {
+    SoilCategory.GRAVEL_CLEAN_CRYSTAL,
+    SoilCategory.GRAVEL_WITH_SAND,
+    SoilCategory.GRAVEL_SEDIMENTARY,
+    SoilCategory.GRAVEL_SILTY_SAND,
 }
 
-# Noduri pentru interpolare pe I_C: {I_C: p_conv}
+_FIXED: dict[SoilCategory, float] = {
+    SoilCategory.GRAVEL_CLEAN_CRYSTAL: 600.0,
+    SoilCategory.GRAVEL_WITH_SAND:     550.0,
+    SoilCategory.GRAVEL_SEDIMENTARY:   350.0,
+}
+
 _INTERPOLABLE: dict[SoilCategory, dict[float, float]] = {
-    SoilCategory.BOULDER_CLAY_FILL: {0.5: 350.0, 1.0: 600.0},
+    SoilCategory.GRAVEL_SILTY_SAND: {0.5: 350.0, 1.0: 500.0},
 }
 
 _IC_RANGE_WARNING = "Furnizați consistency_index (I_C) pentru a rezolva valoarea exactă."
@@ -26,10 +32,10 @@ def get_presumed_bearing_pressure(
     consistency_index: float | None = None,
 ) -> PresumedBearingPressureResult:
     """
-    Returnează p̄_conv [kPa] pentru pământuri foarte grosiere
+    Returnează p̄_conv [kPa] pentru pământuri grosiere (pietrișuri)
     conform NP 112:2014, Tabelul D.2.
 
-    consistency_index (I_C) necesar doar pentru BOULDER_CLAY_FILL.
+    consistency_index (I_C) necesar doar pentru GRAVEL_SILTY_SAND.
     """
     result = PresumedBearingPressureResult(source=_SOURCE)
 
@@ -39,9 +45,9 @@ def get_presumed_bearing_pressure(
         result.errors.append(f"Categorie de sol necunoscută: {soil_category!r}.")
         return result
 
-    if soil_category not in _BOULDER_CATEGORIES:
+    if soil_category not in _GRAVEL_CATEGORIES:
         result.errors.append(
-            f"Categoria {soil_category!r} nu aparține Tabelului D.2 (boulders). "
+            f"Categoria {soil_category!r} nu aparține Tabelului D.2 (gravels). "
             "Folosiți modulul corespunzător categoriei de sol."
         )
         return result
@@ -53,7 +59,6 @@ def get_presumed_bearing_pressure(
         result.valid = True
         return result
 
-    # Range interpolabil
     knots = _INTERPOLABLE[soil_category]
     ic_min, ic_max = min(knots), max(knots)
 
