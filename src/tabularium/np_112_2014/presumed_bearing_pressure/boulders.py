@@ -18,11 +18,6 @@ _INTERPOLABLE: dict[SoilCategory, dict[float, float]] = {
     SoilCategory.BOULDER_CLAY_FILL: {0.5: 350.0, 1.0: 600.0},
 }
 
-_SOIL_TYPES: dict[SoilCategory, SoilType] = {
-    SoilCategory.BOULDER_GRAVEL_FILL: SoilType.NON_COHESIVE,
-    SoilCategory.BOULDER_CLAY_FILL:   SoilType.COHESIVE,
-}
-
 _IC_RANGE_WARNING = "Furnizați consistency_index (I_C) pentru a rezolva valoarea exactă."
 
 
@@ -51,7 +46,7 @@ def get_presumed_bearing_pressure(
         )
         return result
 
-    result.soil_type = _SOIL_TYPES[soil_category]
+    result.soil_type = SoilType.NON_COHESIVE
 
     if soil_category in _FIXED:
         result.p_conv = _FIXED[soil_category]
