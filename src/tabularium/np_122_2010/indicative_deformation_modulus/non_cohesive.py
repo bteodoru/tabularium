@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ..enums import RelativeDensity, SoilCategory
-from ..models import CodeSource, LookupResult
+from ...enums import RelativeDensity, SoilCategory
+from ...models import CodeSource, LookupResult
 
 _SOURCE = CodeSource(code="NP 122:2010", table="Tabelul A.6.3")
 

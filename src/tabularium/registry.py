@@ -4,12 +4,12 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from .models import LookupResult
-from .np_122_2010.indicative_shear_strength_non_cohesive import get_phi as _np122_shear_non_cohesive
-from .np_122_2010.indicative_shear_strength_cohesive import get_phi_c as _np122_shear_cohesive
-from .np_122_2010.indicative_deformation_modulus_non_cohesive import (
+from .np_122_2010.indicative_shear_strength.non_cohesive import get_phi as _np122_shear_non_cohesive
+from .np_122_2010.indicative_shear_strength.cohesive import get_phi_c as _np122_shear_cohesive
+from .np_122_2010.indicative_deformation_modulus.non_cohesive import (
     get_deformation_modulus as _np122_deformation_non_cohesive,
 )
-from .np_122_2010.indicative_deformation_modulus_cohesive import (
+from .np_122_2010.indicative_deformation_modulus.cohesive import (
     get_deformation_modulus as _np122_deformation_cohesive,
 )
 from .np_112_2014.presumed_bearing_pressure.rocks import get_presumed_bearing_pressure as _np112_rocks

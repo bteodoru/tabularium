@@ -1,5 +1,5 @@
 import pytest
-from tabularium.np_122_2010.indicative_shear_strength_non_cohesive import (
+from tabularium.np_122_2010.indicative_shear_strength.non_cohesive import (
     RelativeDensity,
     ShearStrengthNonCohesiveResult,
     SoilCategory,

@@ -1,5 +1,5 @@
 import pytest
-from tabularium.np_122_2010.indicative_deformation_modulus_non_cohesive import (
+from tabularium.np_122_2010.indicative_deformation_modulus.non_cohesive import (
     DeformationModulusNonCohesiveResult,
     RelativeDensity,
     SoilCategory,

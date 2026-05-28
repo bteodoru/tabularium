@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ..interpolation import interpolate_linear
-from ..models import CodeSource, LookupResult
+from ...interpolation import interpolate_linear
+from ...models import CodeSource, LookupResult
 
 _SOURCE = CodeSource(code="NP 122:2010", table="Tabelul A.6.2")
 
@@ -125,7 +125,7 @@ def _select_ic_range(ic: float, ip_cat: str) -> tuple[str | None, list[str]]:
 def get_phi_c(ip: float, ic: float, e: float) -> ShearStrengthResult:
     """
     Returnează valorile orientative ale parametrilor rezistenței la forfecare
-    a pământurilor coezive, în condiții drenate  (φ', c') conform NP 122:2010, 
+    a pământurilor coezive, în condiții drenate  (φ', c') conform NP 122:2010,
     Tabelul A.6.2.
 
     Domeniu de validitate: S_r > 0.8.

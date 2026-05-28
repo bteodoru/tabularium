@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ..interpolation import interpolate_linear
-from ..models import CodeSource, LookupResult
+from ...interpolation import interpolate_linear
+from ...models import CodeSource, LookupResult
 
 _SOURCE = CodeSource(code="NP 122:2010", table="Tabelul A.6.4")
 
