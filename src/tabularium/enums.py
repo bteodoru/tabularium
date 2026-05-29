@@ -18,7 +18,7 @@ class Soil(str, Enum):
 
     # NP 112:2014 D.2 — boulders
     BOULDER_GRAVEL_FILL       = "boulder_gravel_fill"
-    BOULDER_COHESIVE_FILL         = "boulder_clay_fill"
+    BOULDER_COHESIVE_FILL         = "boulder_cohesive_fill"
 
     # NP 112:2014 D.2 — gravels
     GRAVEL_CLEAN_CRYSTAL      = "gravel_clean_crystal"
