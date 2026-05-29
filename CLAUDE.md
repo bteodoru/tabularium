@@ -29,18 +29,27 @@ src/tabularium/
 ├── models.py            # shared dataclasses (CodeSource, LookupResult)
 ├── np_122_2010/
 │   ├── __init__.py
-│   ├── indicative_shear_strength_non_cohesive.py       # Tabelul A.6.1 — φ' pentru pământuri necoezive
-│   ├── indicative_shear_strength_cohesive.py           # Tabelul A.6.2 — φ', c' pentru pământuri coezive
-│   ├── indicative_deformation_modulus_non_cohesive.py  # Tabelul A.6.3 — E pentru pământuri nisipoase
-│   └── indicative_deformation_modulus_cohesive.py      # Tabelul A.6.4 — E pentru pământuri coezive
+│   ├── indicative_shear_strength/
+│   │   ├── __init__.py
+│   │   ├── non_cohesive.py                          # Tabelul A.6.1 — φ' pentru pământuri necoezive
+│   │   └── cohesive.py                              # Tabelul A.6.2 — φ', c' pentru pământuri coezive
+│   └── indicative_deformation_modulus/
+│       ├── __init__.py
+│       ├── non_cohesive.py                          # Tabelul A.6.3 — E pentru pământuri nisipoase
+│       └── cohesive.py                              # Tabelul A.6.4 — E pentru pământuri coezive
 ├── np_112_2014/
-│   ├── __init__.py                                  # PresumedBearingPressureResult
-│   ├── presumed_bearing_pressure_rocks.py           # Tabelul D.1 — roci stâncoase și semi-stâncoase
-│   ├── presumed_bearing_pressure_boulders.py        # Tabelul D.2 — pământuri foarte grosiere
-│   ├── presumed_bearing_pressure_gravels.py         # Tabelul D.2 — pământuri grosiere (pietrișuri)
-│   ├── presumed_bearing_pressure_sands.py           # Tabelul D.3 — nisipuri
-│   ├── presumed_bearing_pressure_fines.py           # Tabelul D.4 — pământuri fine coezive
-│   └── presumed_bearing_pressure_fills.py           # Tabelul D.5 — umpluturi
+│   ├── __init__.py
+│   ├── presumed_bearing_pressure/
+│   │   ├── __init__.py                              # PresumedBearingPressureResult
+│   │   ├── rocks.py                                 # Tabelul D.1 — roci stâncoase și semi-stâncoase
+│   │   ├── boulders.py                              # Tabelul D.2 — pământuri foarte grosiere
+│   │   ├── gravels.py                               # Tabelul D.2 — pământuri grosiere (pietrișuri)
+│   │   ├── sands.py                                 # Tabelul D.3 — nisipuri
+│   │   ├── fines.py                                 # Tabelul D.4 — pământuri fine coezive
+│   │   └── fills.py                                 # Tabelul D.5 — umpluturi
+│   └── allowable_bearing_capacity/
+│       ├── __init__.py                              # WorkingConditionFactorResult
+│       └── working_condition_factor.py              # Tabelul H.7 — coeficientul condițiilor de lucru m₁
 tests/
 ├── test_models.py
 ├── test_interpolation.py
@@ -54,7 +63,8 @@ tests/
 ├── test_np_112_2014_presumed_bearing_pressure_gravels.py
 ├── test_np_112_2014_presumed_bearing_pressure_sands.py
 ├── test_np_112_2014_presumed_bearing_pressure_fines.py
-└── test_np_112_2014_presumed_bearing_pressure_fills.py
+├── test_np_112_2014_presumed_bearing_pressure_fills.py
+└── test_np_112_2014_allowable_bearing_capacity_working_condition_factor.py
 ```
 
 ## Design principles

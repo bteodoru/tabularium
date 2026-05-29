@@ -18,6 +18,9 @@ from .np_112_2014.presumed_bearing_pressure.gravels import get_presumed_bearing_
 from .np_112_2014.presumed_bearing_pressure.sands import get_presumed_bearing_pressure as _np112_sands
 from .np_112_2014.presumed_bearing_pressure.fines import get_presumed_bearing_pressure as _np112_fines
 from .np_112_2014.presumed_bearing_pressure.fills import get_presumed_bearing_pressure as _np112_fills
+from .np_112_2014.allowable_bearing_capacity.working_condition_factor import (
+    get_working_condition_factor as _np112_working_condition_factor,
+)
 
 
 @dataclass
@@ -88,6 +91,12 @@ REGISTRY: dict[str, TableEntry] = {
         table_id="D.5",
         description="Presiuni convenționale p̄_conv [kPa] pentru umpluturi",
         lookup_fn=_np112_fills,
+    ),
+    "np_112_2014.working_condition_factor": TableEntry(
+        normative="NP 112:2014",
+        table_id="H.7",
+        description="Coeficientul condițiilor de lucru m₁",
+        lookup_fn=_np112_working_condition_factor,
     ),
 }
 
