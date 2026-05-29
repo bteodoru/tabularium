@@ -30,7 +30,6 @@ class Soil(str, Enum):
     BOULDER_SAND_FILL         = "boulder_sand_fill"
     GRAVEL                    = "gravel"
     GRAVEL_COHESIVE_FILL      = "gravel_cohesive_fill"
-    COHESIVE_SOIL             = "cohesive_soil"
 
     # NP 112:2014 D.3 — sands
     COARSE_SAND               = "coarse_sand"
