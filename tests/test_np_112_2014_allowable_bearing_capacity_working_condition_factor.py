@@ -6,28 +6,28 @@ from tabularium.np_112_2014.allowable_bearing_capacity.working_condition_factor 
 )
 
 
-# ── Rândul 1: fără condiție secundară (m₁ = 2.0) ─────────────────────────────
+# ── Rândul 1: fără condiție secundară (mₗ = 2.0) ─────────────────────────────
 
 def test_boulder_sand_fill():
     r = get_working_condition_factor(soil=Soil.BOULDER_SAND_FILL)
     assert r.valid is True
-    assert r.m1 == pytest.approx(2.0)
+    assert r.ml == pytest.approx(2.0)
     assert r.errors == []
 
 def test_medium_sand():
     r = get_working_condition_factor(soil=Soil.MEDIUM_SAND)
     assert r.valid is True
-    assert r.m1 == pytest.approx(2.0)
+    assert r.ml == pytest.approx(2.0)
 
 def test_coarse_sand():
     r = get_working_condition_factor(soil=Soil.COARSE_SAND)
     assert r.valid is True
-    assert r.m1 == pytest.approx(2.0)
+    assert r.ml == pytest.approx(2.0)
 
 def test_gravel():
     r = get_working_condition_factor(soil=Soil.GRAVEL)
     assert r.valid is True
-    assert r.m1 == pytest.approx(2.0)
+    assert r.ml == pytest.approx(2.0)
 
 
 # ── Nisipuri fine (Sᵣ) ────────────────────────────────────────────────────────
@@ -35,12 +35,12 @@ def test_gravel():
 def test_fine_sand_sr_at_threshold():
     r = get_working_condition_factor(soil=Soil.FINE_SAND, saturation_ratio=0.8)
     assert r.valid is True
-    assert r.m1 == pytest.approx(1.7)
+    assert r.ml == pytest.approx(1.7)
 
 def test_fine_sand_sr_above_threshold():
     r = get_working_condition_factor(soil=Soil.FINE_SAND, saturation_ratio=0.81)
     assert r.valid is True
-    assert r.m1 == pytest.approx(1.6)
+    assert r.ml == pytest.approx(1.6)
 
 def test_fine_sand_missing_saturation_ratio():
     r = get_working_condition_factor(soil=Soil.FINE_SAND)
@@ -53,12 +53,12 @@ def test_fine_sand_missing_saturation_ratio():
 def test_silty_sand_dry_moist():
     r = get_working_condition_factor(soil=Soil.SILTY_SAND, saturation_ratio=0.5)
     assert r.valid is True
-    assert r.m1 == pytest.approx(1.5)
+    assert r.ml == pytest.approx(1.5)
 
 def test_silty_sand_very_moist():
     r = get_working_condition_factor(soil=Soil.SILTY_SAND, saturation_ratio=0.9)
     assert r.valid is True
-    assert r.m1 == pytest.approx(1.3)
+    assert r.ml == pytest.approx(1.3)
 
 def test_silty_sand_missing_saturation_ratio():
     r = get_working_condition_factor(soil=Soil.SILTY_SAND)
@@ -71,12 +71,12 @@ def test_silty_sand_missing_saturation_ratio():
 def test_boulder_cohesive_fill_stiff():
     r = get_working_condition_factor(soil=Soil.BOULDER_COHESIVE_FILL, consistency_index=0.5)
     assert r.valid is True
-    assert r.m1 == pytest.approx(1.3)
+    assert r.ml == pytest.approx(1.3)
 
 def test_boulder_cohesive_fill_soft():
     r = get_working_condition_factor(soil=Soil.BOULDER_COHESIVE_FILL, consistency_index=0.49)
     assert r.valid is True
-    assert r.m1 == pytest.approx(1.1)
+    assert r.ml == pytest.approx(1.1)
 
 def test_boulder_cohesive_fill_missing_ic():
     r = get_working_condition_factor(soil=Soil.BOULDER_COHESIVE_FILL)
@@ -89,12 +89,12 @@ def test_boulder_cohesive_fill_missing_ic():
 def test_gravel_cohesive_fill_stiff():
     r = get_working_condition_factor(soil=Soil.GRAVEL_COHESIVE_FILL, consistency_index=0.7)
     assert r.valid is True
-    assert r.m1 == pytest.approx(1.3)
+    assert r.ml == pytest.approx(1.3)
 
 def test_gravel_cohesive_fill_soft():
     r = get_working_condition_factor(soil=Soil.GRAVEL_COHESIVE_FILL, consistency_index=0.3)
     assert r.valid is True
-    assert r.m1 == pytest.approx(1.1)
+    assert r.ml == pytest.approx(1.1)
 
 def test_gravel_cohesive_fill_missing_ic():
     r = get_working_condition_factor(soil=Soil.GRAVEL_COHESIVE_FILL)
@@ -107,17 +107,17 @@ def test_gravel_cohesive_fill_missing_ic():
 def test_cohesive_category_stiff():
     r = get_working_condition_factor(soil_category=SoilCategory.COHESIVE, consistency_index=0.75)
     assert r.valid is True
-    assert r.m1 == pytest.approx(1.4)
+    assert r.ml == pytest.approx(1.4)
 
 def test_cohesive_category_ic_exactly_05():
     r = get_working_condition_factor(soil_category=SoilCategory.COHESIVE, consistency_index=0.5)
     assert r.valid is True
-    assert r.m1 == pytest.approx(1.4)
+    assert r.ml == pytest.approx(1.4)
 
 def test_cohesive_category_soft():
     r = get_working_condition_factor(soil_category=SoilCategory.COHESIVE, consistency_index=0.49)
     assert r.valid is True
-    assert r.m1 == pytest.approx(1.1)
+    assert r.ml == pytest.approx(1.1)
 
 def test_cohesive_category_missing_ic():
     r = get_working_condition_factor(soil_category=SoilCategory.COHESIVE)

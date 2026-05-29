@@ -7,18 +7,18 @@ from ...models import CodeSource, LookupResult
 
 @dataclass
 class WorkingConditionFactorResult(LookupResult):
-    m1: float | None = None
+    ml: float | None = None
 
 
 @dataclass
 class WorkingConditionTableEntry:
     """Un rând din Tabelul H.7 NP 112:2014."""
     soil_label: str
-    m1: float | None = None
-    m1_uscat_umed: float | None = None
-    m1_saturat: float | None = None
-    m1_consistent: float | None = None
-    m1_moale: float | None = None
+    ml: float | None = None
+    ml_uscat_umed: float | None = None
+    ml_saturat: float | None = None
+    ml_consistent: float | None = None
+    ml_moale: float | None = None
     conditie: str | None = None
 
     def to_dict(self) -> dict:

@@ -95,7 +95,7 @@ REGISTRY: dict[str, TableEntry] = {
     "np_112_2014.working_condition_factor": TableEntry(
         normative="NP 112:2014",
         table_id="H.7",
-        description="Coeficientul condițiilor de lucru m₁",
+        description="Coeficientul condițiilor de lucru mₗ",
         lookup_fn=_np112_working_condition_factor,
     ),
 }

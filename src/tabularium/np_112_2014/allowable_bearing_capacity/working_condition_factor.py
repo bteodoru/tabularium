@@ -17,7 +17,7 @@ _NO_CONDITION: dict[Soil, float] = {
     Soil.GRAVEL:            2.0,
 }
 
-# Categorii condiționate de Sᵣ: (m1_uscat_umed, m1_foarte_umed_saturat)
+# Categorii condiționate de Sᵣ: (ml_uscat_umed, ml_foarte_umed_saturat)
 _SATURATION: dict[Soil, tuple[float, float]] = {
     Soil.FINE_SAND:  (1.7, 1.6),
     Soil.SILTY_SAND: (1.5, 1.3),
@@ -29,7 +29,7 @@ _CONSISTENCY: dict[Soil, tuple[float, float]] = {
     Soil.GRAVEL_COHESIVE_FILL:  (1.3, 1.1),
 }
 
-# ml pentru SoilCategory.COHESIVE (pământuri coezive generice): (m1_consistent, m1_moale)
+# ml pentru SoilCategory.COHESIVE (pământuri coezive generice): (ml_consistent, ml_moale)
 _COHESIVE_CATEGORY_M1: tuple[float, float] = (1.4, 1.1)
 
 
@@ -77,8 +77,8 @@ def get_working_condition_factor(
             )
             return result
 
-        m1_stiff, m1_soft = _COHESIVE_CATEGORY_M1
-        result.m1 = m1_stiff if consistency_index >= _IC_THRESHOLD else m1_soft
+        ml_stiff, ml_soft = _COHESIVE_CATEGORY_M1
+        result.ml = ml_stiff if consistency_index >= _IC_THRESHOLD else ml_soft
         result.valid = True
         return result
 
@@ -90,7 +90,7 @@ def get_working_condition_factor(
         return result
 
     if soil in _NO_CONDITION:
-        result.m1 = _NO_CONDITION[soil]
+        result.ml = _NO_CONDITION[soil]
         result.valid = True
         return result
 
@@ -100,8 +100,8 @@ def get_working_condition_factor(
                 f"saturation_ratio (Sᵣ) este necesar pentru '{soil.label}'."
             )
             return result
-        m1_dry, m1_wet = _SATURATION[soil]
-        result.m1 = m1_dry if saturation_ratio <= _SR_THRESHOLD else m1_wet
+        ml_dry, ml_wet = _SATURATION[soil]
+        result.ml = ml_dry if saturation_ratio <= _SR_THRESHOLD else ml_wet
         result.valid = True
         return result
 
@@ -111,8 +111,8 @@ def get_working_condition_factor(
                 f"consistency_index (Iᶜ) este necesar pentru '{soil.label}'."
             )
             return result
-        m1_stiff, m1_soft = _CONSISTENCY[soil]
-        result.m1 = m1_stiff if consistency_index >= _IC_THRESHOLD else m1_soft
+        ml_stiff, ml_soft = _CONSISTENCY[soil]
+        result.ml = ml_stiff if consistency_index >= _IC_THRESHOLD else ml_soft
         result.valid = True
         return result
 
@@ -126,29 +126,29 @@ def get_working_condition_factor(
 def get_ml_table() -> WorkingConditionTableResult:
     """Returnează Tabelul H.7 complet din NP 112:2014."""
     entries = [
-        WorkingConditionTableEntry(soil_label=Soil.BOULDER_SAND_FILL.label,    m1=2.0),
-        WorkingConditionTableEntry(soil_label=Soil.GRAVEL.label,               m1=2.0),
-        WorkingConditionTableEntry(soil_label=Soil.COARSE_SAND.label,          m1=2.0),
-        WorkingConditionTableEntry(soil_label=Soil.MEDIUM_SAND.label,          m1=2.0),
+        WorkingConditionTableEntry(soil_label=Soil.BOULDER_SAND_FILL.label,    ml=2.0),
+        WorkingConditionTableEntry(soil_label=Soil.GRAVEL.label,               ml=2.0),
+        WorkingConditionTableEntry(soil_label=Soil.COARSE_SAND.label,          ml=2.0),
+        WorkingConditionTableEntry(soil_label=Soil.MEDIUM_SAND.label,          ml=2.0),
         WorkingConditionTableEntry(
             soil_label=Soil.FINE_SAND.label,
-            m1_uscat_umed=1.7, m1_saturat=1.6, conditie="Sr",
+            ml_uscat_umed=1.7, ml_saturat=1.6, conditie="Sr",
         ),
         WorkingConditionTableEntry(
             soil_label=Soil.SILTY_SAND.label,
-            m1_uscat_umed=1.5, m1_saturat=1.3, conditie="Sr",
+            ml_uscat_umed=1.5, ml_saturat=1.3, conditie="Sr",
         ),
         WorkingConditionTableEntry(
             soil_label=Soil.BOULDER_COHESIVE_FILL.label,
-            m1_consistent=1.3, m1_moale=1.1, conditie="Ic",
+            ml_consistent=1.3, ml_moale=1.1, conditie="Ic",
         ),
         WorkingConditionTableEntry(
             soil_label=Soil.GRAVEL_COHESIVE_FILL.label,
-            m1_consistent=1.3, m1_moale=1.1, conditie="Ic",
+            ml_consistent=1.3, ml_moale=1.1, conditie="Ic",
         ),
         WorkingConditionTableEntry(
             soil_label=SoilCategory.COHESIVE.label,
-            m1_consistent=1.4, m1_moale=1.1, conditie="Ic",
+            ml_consistent=1.4, ml_moale=1.1, conditie="Ic",
         ),
     ]
     return WorkingConditionTableResult(entries=entries, source=_SOURCE)
