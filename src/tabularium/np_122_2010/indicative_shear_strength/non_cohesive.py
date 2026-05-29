@@ -15,7 +15,11 @@ class ShearStrengthNonCohesiveResult(LookupResult):
 
 # _TABLE[Soil][RelativeDensity] = φ' (grade)
 _TABLE: dict[Soil, dict[RelativeDensity, float]] = {
-    Soil.GRAVEL_COARSE_SAND: {
+    Soil.SAND_WITH_GRAVEL: {
+        RelativeDensity.MEDIUM: 33.0,
+        RelativeDensity.DENSE:  36.0,
+    },
+    Soil.COARSE_SAND: {
         RelativeDensity.MEDIUM: 33.0,
         RelativeDensity.DENSE:  36.0,
     },

@@ -15,7 +15,15 @@ class DeformationModulusNonCohesiveResult(LookupResult):
 
 # _TABLE[Soil][RelativeDensity] = E (kPa)
 _TABLE: dict[Soil, dict[RelativeDensity, float]] = {
-    Soil.GRAVEL_COARSE_MEDIUM_SAND: {
+    Soil.SAND_WITH_GRAVEL: {
+        RelativeDensity.MEDIUM: 30_000.0,
+        RelativeDensity.DENSE:  40_000.0,
+    },
+    Soil.COARSE_SAND: {
+        RelativeDensity.MEDIUM: 30_000.0,
+        RelativeDensity.DENSE:  40_000.0,
+    },
+    Soil.MEDIUM_SAND: {
         RelativeDensity.MEDIUM: 30_000.0,
         RelativeDensity.DENSE:  40_000.0,
     },

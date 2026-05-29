@@ -8,7 +8,7 @@ from tabularium.np_122_2010.indicative_deformation_modulus.non_cohesive import (
 
 
 def test_gravel_coarse_medium_sand_medium():
-    r = get_deformation_modulus(Soil.GRAVEL_COARSE_MEDIUM_SAND, RelativeDensity.MEDIUM)
+    r = get_deformation_modulus(Soil.COARSE_SAND, RelativeDensity.MEDIUM)
     assert r.valid is True
     assert r.interpolated is False
     assert r.e_modulus == pytest.approx(30_000.0)
@@ -17,7 +17,7 @@ def test_gravel_coarse_medium_sand_medium():
 
 
 def test_gravel_coarse_medium_sand_dense():
-    r = get_deformation_modulus(Soil.GRAVEL_COARSE_MEDIUM_SAND, RelativeDensity.DENSE)
+    r = get_deformation_modulus(Soil.COARSE_SAND, RelativeDensity.DENSE)
     assert r.valid is True
     assert r.e_modulus == pytest.approx(40_000.0)
 

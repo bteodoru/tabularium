@@ -27,7 +27,7 @@ def test_gravel_sedimentary():
 
 
 def test_gravel_silty_sand_no_ic_returns_range():
-    r = get_presumed_bearing_pressure(Soil.GRAVEL_SILTY_SAND)
+    r = get_presumed_bearing_pressure(Soil.GRAVEL_CLAYEY_SAND)
     assert r.valid is True
     assert r.p_conv is None
     assert r.p_conv_range == (350.0, 500.0)
@@ -35,14 +35,14 @@ def test_gravel_silty_sand_no_ic_returns_range():
 
 
 def test_gravel_silty_sand_ic_min():
-    r = get_presumed_bearing_pressure(Soil.GRAVEL_SILTY_SAND, consistency_index=0.5)
+    r = get_presumed_bearing_pressure(Soil.GRAVEL_CLAYEY_SAND, consistency_index=0.5)
     assert r.valid is True
     assert r.p_conv == pytest.approx(350.0)
     assert r.interpolated is False
 
 
 def test_gravel_silty_sand_ic_max():
-    r = get_presumed_bearing_pressure(Soil.GRAVEL_SILTY_SAND, consistency_index=1.0)
+    r = get_presumed_bearing_pressure(Soil.GRAVEL_CLAYEY_SAND, consistency_index=1.0)
     assert r.valid is True
     assert r.p_conv == pytest.approx(500.0)
     assert r.interpolated is False
@@ -50,14 +50,14 @@ def test_gravel_silty_sand_ic_max():
 
 def test_gravel_silty_sand_ic_interpolated():
     # IC=0.75 midpoint [0.5, 1.0] → 350 + 0.5*150 = 425
-    r = get_presumed_bearing_pressure(Soil.GRAVEL_SILTY_SAND, consistency_index=0.75)
+    r = get_presumed_bearing_pressure(Soil.GRAVEL_CLAYEY_SAND, consistency_index=0.75)
     assert r.valid is True
     assert r.p_conv == pytest.approx(425.0)
     assert r.interpolated is True
 
 
 def test_gravel_silty_sand_ic_out_of_range():
-    r = get_presumed_bearing_pressure(Soil.GRAVEL_SILTY_SAND, consistency_index=0.2)
+    r = get_presumed_bearing_pressure(Soil.GRAVEL_CLAYEY_SAND, consistency_index=0.2)
     assert r.valid is False
     assert len(r.errors) == 1
 

@@ -10,7 +10,7 @@ from tabularium.np_122_2010.indicative_shear_strength.non_cohesive import (
 # ── Exact lookup ──────────────────────────────────────────────────────────────
 
 def test_gravel_coarse_sand_medium():
-    r = get_phi(Soil.GRAVEL_COARSE_SAND, RelativeDensity.MEDIUM)
+    r = get_phi(Soil.SAND_WITH_GRAVEL, RelativeDensity.MEDIUM)
     assert r.valid is True
     assert r.interpolated is False
     assert r.phi == pytest.approx(33.0)
@@ -19,7 +19,7 @@ def test_gravel_coarse_sand_medium():
 
 
 def test_gravel_coarse_sand_dense():
-    r = get_phi(Soil.GRAVEL_COARSE_SAND, RelativeDensity.DENSE)
+    r = get_phi(Soil.SAND_WITH_GRAVEL, RelativeDensity.DENSE)
     assert r.valid is True
     assert r.phi == pytest.approx(36.0)
 

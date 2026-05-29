@@ -11,7 +11,7 @@ _GRAVEL_CATEGORIES = {
     Soil.GRAVEL_CLEAN_CRYSTAL,
     Soil.GRAVEL_WITH_SAND,
     Soil.GRAVEL_SEDIMENTARY,
-    Soil.GRAVEL_SILTY_SAND,
+    Soil.GRAVEL_CLAYEY_SAND,
 }
 
 _FIXED: dict[Soil, float] = {
@@ -21,7 +21,7 @@ _FIXED: dict[Soil, float] = {
 }
 
 _INTERPOLABLE: dict[Soil, dict[float, float]] = {
-    Soil.GRAVEL_SILTY_SAND: {0.5: 350.0, 1.0: 500.0},
+    Soil.GRAVEL_CLAYEY_SAND: {0.5: 350.0, 1.0: 500.0},
 }
 
 _IC_RANGE_WARNING = "Furnizați consistency_index (I_C) pentru a rezolva valoarea exactă."
@@ -35,7 +35,7 @@ def get_presumed_bearing_pressure(
     Returnează p̄_conv [kPa] pentru pământuri grosiere (pietrișuri)
     conform NP 112:2014, Tabelul D.2.
 
-    consistency_index (I_C) necesar doar pentru GRAVEL_SILTY_SAND.
+    consistency_index (I_C) necesar doar pentru GRAVEL_CLAYEY_SAND.
     """
     result = PresumedBearingPressureResult(source=_SOURCE)
 
