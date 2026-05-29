@@ -18,13 +18,19 @@ class Soil(str, Enum):
 
     # NP 112:2014 D.2 — boulders
     BOULDER_GRAVEL_FILL       = "boulder_gravel_fill"
-    BOULDER_CLAY_FILL         = "boulder_clay_fill"
+    BOULDER_COHESIVE_FILL         = "boulder_clay_fill"
 
     # NP 112:2014 D.2 — gravels
     GRAVEL_CLEAN_CRYSTAL      = "gravel_clean_crystal"
     GRAVEL_WITH_SAND          = "gravel_with_sand"
     GRAVEL_SEDIMENTARY        = "gravel_sedimentary"
     GRAVEL_SILTY_SAND         = "gravel_silty_sand"
+
+    # NP 112:2014 H.7 — working condition factor
+    BOULDER_SAND_FILL         = "boulder_sand_fill"
+    GRAVEL                    = "gravel"
+    GRAVEL_COHESIVE_FILL      = "gravel_cohesive_fill"
+    COHESIVE_SOIL             = "cohesive_soil"
 
     # NP 112:2014 D.3 — sands
     COARSE_SAND               = "coarse_sand"

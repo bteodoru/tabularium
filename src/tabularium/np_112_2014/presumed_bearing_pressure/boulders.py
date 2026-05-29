@@ -7,7 +7,7 @@ from . import PresumedBearingPressureResult
 
 _SOURCE = CodeSource(code="NP 112:2014", table="Tabelul D.2")
 
-_BOULDER_CATEGORIES = {Soil.BOULDER_GRAVEL_FILL, Soil.BOULDER_CLAY_FILL}
+_BOULDER_CATEGORIES = {Soil.BOULDER_GRAVEL_FILL, Soil.BOULDER_COHESIVE_FILL}
 
 _FIXED: dict[Soil, float] = {
     Soil.BOULDER_GRAVEL_FILL: 750.0,
@@ -15,7 +15,7 @@ _FIXED: dict[Soil, float] = {
 
 # Noduri pentru interpolare pe I_C: {I_C: p_conv}
 _INTERPOLABLE: dict[Soil, dict[float, float]] = {
-    Soil.BOULDER_CLAY_FILL: {0.5: 350.0, 1.0: 600.0},
+    Soil.BOULDER_COHESIVE_FILL: {0.5: 350.0, 1.0: 600.0},
 }
 
 _IC_RANGE_WARNING = "Furnizați consistency_index (I_C) pentru a rezolva valoarea exactă."
@@ -29,7 +29,7 @@ def get_presumed_bearing_pressure(
     Returnează p̄_conv [kPa] pentru pământuri foarte grosiere
     conform NP 112:2014, Tabelul D.2.
 
-    consistency_index (I_C) necesar doar pentru BOULDER_CLAY_FILL.
+    consistency_index (I_C) necesar doar pentru BOULDER_COHESIVE_FILL.
     """
     result = PresumedBearingPressureResult(source=_SOURCE)
 
