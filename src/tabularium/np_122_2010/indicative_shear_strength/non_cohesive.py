@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ...enums import RelativeDensity, SoilCategory
+from ...enums import RelativeDensity, Soil
 from ...models import CodeSource, LookupResult
 
 _SOURCE = CodeSource(code="NP 122:2010", table="Tabelul A.6.1")
@@ -13,21 +13,21 @@ class ShearStrengthNonCohesiveResult(LookupResult):
     phi: float | None = None  # unghi de frecare internă φ' [grade]
 
 
-# _TABLE[SoilCategory][RelativeDensity] = φ' (grade)
-_TABLE: dict[SoilCategory, dict[RelativeDensity, float]] = {
-    SoilCategory.GRAVEL_COARSE_SAND: {
+# _TABLE[Soil][RelativeDensity] = φ' (grade)
+_TABLE: dict[Soil, dict[RelativeDensity, float]] = {
+    Soil.GRAVEL_COARSE_SAND: {
         RelativeDensity.MEDIUM: 33.0,
         RelativeDensity.DENSE:  36.0,
     },
-    SoilCategory.MEDIUM_SAND: {
+    Soil.MEDIUM_SAND: {
         RelativeDensity.MEDIUM: 31.0,
         RelativeDensity.DENSE:  33.0,
     },
-    SoilCategory.FINE_SAND: {
+    Soil.FINE_SAND: {
         RelativeDensity.MEDIUM: 27.0,
         RelativeDensity.DENSE:  30.0,
     },
-    SoilCategory.SILTY_SAND: {
+    Soil.SILTY_SAND: {
         RelativeDensity.MEDIUM: 24.0,
         RelativeDensity.DENSE:  28.0,
     },
@@ -35,7 +35,7 @@ _TABLE: dict[SoilCategory, dict[RelativeDensity, float]] = {
 
 
 def get_phi(
-    soil_category: SoilCategory,
+    soil_category: Soil,
     relative_density: RelativeDensity,
 ) -> ShearStrengthNonCohesiveResult:
     """
@@ -48,7 +48,7 @@ def get_phi(
     result = ShearStrengthNonCohesiveResult(source=_SOURCE)
 
     try:
-        soil_category    = SoilCategory(soil_category)
+        soil_category    = Soil(soil_category)
         relative_density = RelativeDensity(relative_density)
     except ValueError:
         result.errors.append(

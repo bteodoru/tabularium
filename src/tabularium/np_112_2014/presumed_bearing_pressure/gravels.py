@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...enums import SoilCategory, SoilType
+from ...enums import Soil, SoilCategory
 from ...interpolation import interpolate_linear
 from ...models import CodeSource
 from . import PresumedBearingPressureResult
@@ -8,27 +8,27 @@ from . import PresumedBearingPressureResult
 _SOURCE = CodeSource(code="NP 112:2014", table="Tabelul D.2")
 
 _GRAVEL_CATEGORIES = {
-    SoilCategory.GRAVEL_CLEAN_CRYSTAL,
-    SoilCategory.GRAVEL_WITH_SAND,
-    SoilCategory.GRAVEL_SEDIMENTARY,
-    SoilCategory.GRAVEL_SILTY_SAND,
+    Soil.GRAVEL_CLEAN_CRYSTAL,
+    Soil.GRAVEL_WITH_SAND,
+    Soil.GRAVEL_SEDIMENTARY,
+    Soil.GRAVEL_SILTY_SAND,
 }
 
-_FIXED: dict[SoilCategory, float] = {
-    SoilCategory.GRAVEL_CLEAN_CRYSTAL: 600.0,
-    SoilCategory.GRAVEL_WITH_SAND:     550.0,
-    SoilCategory.GRAVEL_SEDIMENTARY:   350.0,
+_FIXED: dict[Soil, float] = {
+    Soil.GRAVEL_CLEAN_CRYSTAL: 600.0,
+    Soil.GRAVEL_WITH_SAND:     550.0,
+    Soil.GRAVEL_SEDIMENTARY:   350.0,
 }
 
-_INTERPOLABLE: dict[SoilCategory, dict[float, float]] = {
-    SoilCategory.GRAVEL_SILTY_SAND: {0.5: 350.0, 1.0: 500.0},
+_INTERPOLABLE: dict[Soil, dict[float, float]] = {
+    Soil.GRAVEL_SILTY_SAND: {0.5: 350.0, 1.0: 500.0},
 }
 
 _IC_RANGE_WARNING = "Furnizați consistency_index (I_C) pentru a rezolva valoarea exactă."
 
 
 def get_presumed_bearing_pressure(
-    soil_category: SoilCategory,
+    soil_category: Soil,
     consistency_index: float | None = None,
 ) -> PresumedBearingPressureResult:
     """
@@ -40,7 +40,7 @@ def get_presumed_bearing_pressure(
     result = PresumedBearingPressureResult(source=_SOURCE)
 
     try:
-        soil_category = SoilCategory(soil_category)
+        soil_category = Soil(soil_category)
     except ValueError:
         result.errors.append(f"Categorie de sol necunoscută: {soil_category!r}.")
         return result
@@ -52,7 +52,7 @@ def get_presumed_bearing_pressure(
         )
         return result
 
-    result.soil_type = SoilType.NON_COHESIVE
+    result.soil_type = SoilCategory.NON_COHESIVE
 
     if soil_category in _FIXED:
         result.p_conv = _FIXED[soil_category]

@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 
 
-class SoilCategory(str, Enum):
+class Soil(str, Enum):
     # NP 122:2010 — existente
     GRAVEL_COARSE_SAND        = "gravel_coarse_sand"
     GRAVEL_COARSE_MEDIUM_SAND = "gravel_coarse_medium_sand"
@@ -58,6 +58,6 @@ class FillSoilType(str, Enum):
     SILTY_FINE = "silty_fine"  # nisipuri prăfoase, coezive, cenușe
 
 
-class SoilType(str, Enum):
+class SoilCategory(str, Enum):
     COHESIVE     = "cohesive"
     NON_COHESIVE = "non_cohesive"

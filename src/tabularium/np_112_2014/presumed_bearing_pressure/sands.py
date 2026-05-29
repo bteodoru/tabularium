@@ -1,68 +1,68 @@
 from __future__ import annotations
 
-from ...enums import MoistureCondition, RelativeDensity, SoilCategory, SoilType
+from ...enums import MoistureCondition, RelativeDensity, Soil, SoilCategory
 from ...models import CodeSource
 from . import PresumedBearingPressureResult
 
 _SOURCE = CodeSource(code="NP 112:2014", table="Tabelul D.3")
 
 _SAND_CATEGORIES = {
-    SoilCategory.COARSE_SAND,
-    SoilCategory.MEDIUM_SAND,
-    SoilCategory.FINE_SAND,
-    SoilCategory.SILTY_SAND,
+    Soil.COARSE_SAND,
+    Soil.MEDIUM_SAND,
+    Soil.FINE_SAND,
+    Soil.SILTY_SAND,
 }
 
-_SOIL_TYPES: dict[SoilCategory, SoilType] = {
-    SoilCategory.COARSE_SAND: SoilType.NON_COHESIVE,
-    SoilCategory.MEDIUM_SAND: SoilType.NON_COHESIVE,
-    SoilCategory.FINE_SAND:   SoilType.NON_COHESIVE,
-    SoilCategory.SILTY_SAND:  SoilType.COHESIVE,
+_SOIL_TYPES: dict[Soil, SoilCategory] = {
+    Soil.COARSE_SAND: SoilCategory.NON_COHESIVE,
+    Soil.MEDIUM_SAND: SoilCategory.NON_COHESIVE,
+    Soil.FINE_SAND:   SoilCategory.NON_COHESIVE,
+    Soil.SILTY_SAND:  SoilCategory.COHESIVE,
 }
 
 # Categorii fără diferențiere pe umiditate: orice MoistureCondition e acceptat
-_MOISTURE_INDEPENDENT = {SoilCategory.COARSE_SAND, SoilCategory.MEDIUM_SAND}
+_MOISTURE_INDEPENDENT = {Soil.COARSE_SAND, Soil.MEDIUM_SAND}
 
-# _TABLE[(SoilCategory, MoistureCondition | None)][RelativeDensity] = p_conv
+# _TABLE[(Soil, MoistureCondition | None)][RelativeDensity] = p_conv
 # None ca cheie de umiditate = indiferent de umiditate
-_TABLE: dict[tuple[SoilCategory, MoistureCondition | None], dict[RelativeDensity, float]] = {
-    (SoilCategory.COARSE_SAND, None): {
+_TABLE: dict[tuple[Soil, MoistureCondition | None], dict[RelativeDensity, float]] = {
+    (Soil.COARSE_SAND, None): {
         RelativeDensity.DENSE:  700.0,
         RelativeDensity.MEDIUM: 600.0,
     },
-    (SoilCategory.MEDIUM_SAND, None): {
+    (Soil.MEDIUM_SAND, None): {
         RelativeDensity.DENSE:  600.0,
         RelativeDensity.MEDIUM: 500.0,
     },
-    (SoilCategory.FINE_SAND, MoistureCondition.DRY): {
+    (Soil.FINE_SAND, MoistureCondition.DRY): {
         RelativeDensity.DENSE:  500.0,
         RelativeDensity.MEDIUM: 350.0,
     },
-    (SoilCategory.FINE_SAND, MoistureCondition.MOIST): {
+    (Soil.FINE_SAND, MoistureCondition.MOIST): {
         RelativeDensity.DENSE:  500.0,
         RelativeDensity.MEDIUM: 350.0,
     },
-    (SoilCategory.FINE_SAND, MoistureCondition.VERY_MOIST): {
+    (Soil.FINE_SAND, MoistureCondition.VERY_MOIST): {
         RelativeDensity.DENSE:  350.0,
         RelativeDensity.MEDIUM: 250.0,
     },
-    (SoilCategory.FINE_SAND, MoistureCondition.SATURATED): {
+    (Soil.FINE_SAND, MoistureCondition.SATURATED): {
         RelativeDensity.DENSE:  350.0,
         RelativeDensity.MEDIUM: 250.0,
     },
-    (SoilCategory.SILTY_SAND, MoistureCondition.DRY): {
+    (Soil.SILTY_SAND, MoistureCondition.DRY): {
         RelativeDensity.DENSE:  350.0,
         RelativeDensity.MEDIUM: 300.0,
     },
-    (SoilCategory.SILTY_SAND, MoistureCondition.MOIST): {
+    (Soil.SILTY_SAND, MoistureCondition.MOIST): {
         RelativeDensity.DENSE:  250.0,
         RelativeDensity.MEDIUM: 200.0,
     },
-    (SoilCategory.SILTY_SAND, MoistureCondition.VERY_MOIST): {
+    (Soil.SILTY_SAND, MoistureCondition.VERY_MOIST): {
         RelativeDensity.DENSE:  200.0,
         RelativeDensity.MEDIUM: 150.0,
     },
-    (SoilCategory.SILTY_SAND, MoistureCondition.SATURATED): {
+    (Soil.SILTY_SAND, MoistureCondition.SATURATED): {
         RelativeDensity.DENSE:  200.0,
         RelativeDensity.MEDIUM: 150.0,
     },
@@ -70,7 +70,7 @@ _TABLE: dict[tuple[SoilCategory, MoistureCondition | None], dict[RelativeDensity
 
 
 def get_presumed_bearing_pressure(
-    soil_category: SoilCategory,
+    soil_category: Soil,
     relative_density: RelativeDensity,
     moisture_condition: MoistureCondition,
 ) -> PresumedBearingPressureResult:
@@ -83,7 +83,7 @@ def get_presumed_bearing_pressure(
     result = PresumedBearingPressureResult(source=_SOURCE)
 
     try:
-        soil_category     = SoilCategory(soil_category)
+        soil_category     = Soil(soil_category)
         relative_density  = RelativeDensity(relative_density)
         moisture_condition = MoistureCondition(moisture_condition)
     except ValueError as exc:

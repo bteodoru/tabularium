@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import bisect
 
-from ...enums import PlasticityClass, SoilType
+from ...enums import PlasticityClass, SoilCategory
 from ...interpolation import interpolate_linear
 from ...models import CodeSource
 from . import PresumedBearingPressureResult
@@ -138,6 +138,6 @@ def get_presumed_bearing_pressure(
 
     result.p_conv = value
     result.interpolated = interpolated
-    result.soil_type = SoilType.COHESIVE
+    result.soil_type = SoilCategory.COHESIVE
     result.valid = True
     return result

@@ -1,6 +1,6 @@
 import pytest
 from tabularium.registry import REGISTRY, TableEntry, get_table, list_tables
-from tabularium.enums import RelativeDensity, SoilCategory
+from tabularium.enums import RelativeDensity, Soil
 
 
 def test_list_tables_contains_shear_strength():
@@ -63,5 +63,5 @@ def test_registry_cohesive_lookup_fn_works():
 
 def test_registry_non_cohesive_lookup_fn_works():
     entry = get_table("np_122_2010.indicative_deformation_modulus_non_cohesive")
-    r = entry.lookup_fn(SoilCategory.FINE_SAND, RelativeDensity.MEDIUM)
+    r = entry.lookup_fn(Soil.FINE_SAND, RelativeDensity.MEDIUM)
     assert r.valid is True

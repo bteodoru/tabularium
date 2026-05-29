@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...enums import FillSoilType, FillType, SoilType
+from ...enums import FillSoilType, FillType, SoilCategory
 from ...interpolation import interpolate_linear
 from ...models import CodeSource
 from . import PresumedBearingPressureResult
@@ -20,9 +20,9 @@ _TABLE: dict[FillType, dict[FillSoilType, dict[float, float]]] = {
     },
 }
 
-_FILL_SOIL_TYPE: dict[FillSoilType, SoilType] = {
-    FillSoilType.SANDY_SLAG: SoilType.NON_COHESIVE,
-    FillSoilType.SILTY_FINE: SoilType.COHESIVE,
+_FILL_SOIL_TYPE: dict[FillSoilType, SoilCategory] = {
+    FillSoilType.SANDY_SLAG: SoilCategory.NON_COHESIVE,
+    FillSoilType.SILTY_FINE: SoilCategory.COHESIVE,
 }
 
 _SR_MIN = 0.0
