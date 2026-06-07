@@ -187,4 +187,33 @@ def _classify_cohesive_fine(inp: TerrainConditionInput) -> TerrainConditionResul
 
 
 def _classify_fill(inp: TerrainConditionInput) -> TerrainConditionResult:
-    raise NotImplementedError
+    if inp.fill_category is None:
+        return _error("fill_category este necesar pentru FILL.")
+
+    try:
+        fc = FillCategory(inp.fill_category)
+    except ValueError:
+        return _error(f"Categorie umpluturi necunoscută: {inp.fill_category!r}.")
+
+    if fc == FillCategory.CONTROLLED_COMPACTED:
+        return _make_result(TerrainCondition.GOOD, "A.1", 7)
+
+    if fc == FillCategory.HOUSEHOLD:
+        return _make_result(TerrainCondition.DIFFICULT, "A.3", 9)
+
+    if fc == FillCategory.KNOWN_ORIGIN_ORGANIZED:
+        if inp.organic_content_pct >= 5.0:
+            return _make_result(TerrainCondition.DIFFICULT, "A.3", 6)
+        return _make_result(TerrainCondition.MEDIUM, "A.2", 6)
+
+    # UNCONTROLLED
+    if inp.fill_age_years is None:
+        return _error("fill_age_years este necesar pentru UNCONTROLLED.")
+    if inp.fill_age_years < 10:
+        return _make_result(TerrainCondition.DIFFICULT, "A.3", 8)
+    warnings: list[str] = []
+    if inp.fill_age_years <= 12:
+        warnings.append(
+            "Vârstă la limita zonei gri 10–12 ani (A.2 rând 6 / A.3 rând 8) — verificați cu normativul."
+        )
+    return _make_result(TerrainCondition.MEDIUM, "A.2", 6, warnings)

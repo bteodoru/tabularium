@@ -519,3 +519,149 @@ def test_cohesive_fine_missing_void_ratio_returns_error():
     )
     assert r.valid is False
     assert len(r.errors) == 1
+
+
+# ── FILL ──────────────────────────────────────────────────────────────────────
+
+
+def test_fill_controlled_compacted_returns_good_a1_row7():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.FILL,
+            fill_category=FillCategory.CONTROLLED_COMPACTED,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.GOOD
+    assert r.matched_table == "A.1"
+    assert r.matched_row == 7
+
+
+def test_fill_household_returns_difficult_a3_row9():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.FILL,
+            fill_category=FillCategory.HOUSEHOLD,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.DIFFICULT
+    assert r.matched_table == "A.3"
+    assert r.matched_row == 9
+
+
+def test_fill_known_origin_low_organic_returns_medium_a2_row6():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.FILL,
+            fill_category=FillCategory.KNOWN_ORIGIN_ORGANIZED,
+            organic_content_pct=3.0,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.MEDIUM
+    assert r.matched_table == "A.2"
+    assert r.matched_row == 6
+
+
+def test_fill_known_origin_high_organic_returns_difficult_a3_row6():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.FILL,
+            fill_category=FillCategory.KNOWN_ORIGIN_ORGANIZED,
+            organic_content_pct=6.0,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.DIFFICULT
+    assert r.matched_table == "A.3"
+    assert r.matched_row == 6
+
+
+def test_fill_known_origin_exactly_5_pct_organic_returns_difficult():
+    # boundary: >= 5% → DIFFICULT
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.FILL,
+            fill_category=FillCategory.KNOWN_ORIGIN_ORGANIZED,
+            organic_content_pct=5.0,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.DIFFICULT
+
+
+def test_fill_uncontrolled_old_returns_medium_a2_row6():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.FILL,
+            fill_category=FillCategory.UNCONTROLLED,
+            fill_age_years=15.0,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.MEDIUM
+    assert r.matched_table == "A.2"
+    assert r.matched_row == 6
+    assert r.warnings == []
+
+
+def test_fill_uncontrolled_young_returns_difficult_a3_row8():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.FILL,
+            fill_category=FillCategory.UNCONTROLLED,
+            fill_age_years=5.0,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.DIFFICULT
+    assert r.matched_table == "A.3"
+    assert r.matched_row == 8
+
+
+def test_fill_uncontrolled_exactly_10_years_returns_medium():
+    # boundary: < 10 → DIFFICULT, so 10 → MEDIUM (in grey zone [10,12])
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.FILL,
+            fill_category=FillCategory.UNCONTROLLED,
+            fill_age_years=10.0,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.MEDIUM
+    assert len(r.warnings) == 1
+
+
+def test_fill_uncontrolled_grey_zone_emits_warning():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.FILL,
+            fill_category=FillCategory.UNCONTROLLED,
+            fill_age_years=11.0,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.MEDIUM
+    assert len(r.warnings) == 1
+    assert "10" in r.warnings[0] and "12" in r.warnings[0]
+
+
+def test_fill_uncontrolled_missing_age_returns_error():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.FILL,
+            fill_category=FillCategory.UNCONTROLLED,
+        )
+    )
+    assert r.valid is False
+    assert len(r.errors) == 1
+
+
+def test_fill_missing_category_returns_error():
+    r = classify_terrain_condition(
+        TerrainConditionInput(soil_group=SoilGroup.FILL)
+    )
+    assert r.valid is False
+    assert len(r.errors) == 1
