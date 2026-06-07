@@ -54,5 +54,63 @@ class TerrainConditionResult(LookupResult):
     matched_row: int | None = None
 
 
+def _make_result(
+    condition: TerrainCondition,
+    table: str,
+    row: int,
+    warnings: list[str] | None = None,
+) -> TerrainConditionResult:
+    r = TerrainConditionResult(source=_SOURCE)
+    r.condition = condition
+    r.matched_table = table
+    r.matched_row = row
+    r.valid = True
+    if warnings:
+        r.warnings.extend(warnings)
+    return r
+
+
+def _error(msg: str) -> TerrainConditionResult:
+    r = TerrainConditionResult(source=_SOURCE)
+    r.errors.append(msg)
+    return r
+
+
 def classify_terrain_condition(inp: TerrainConditionInput) -> TerrainConditionResult:
+    if inp.collapsible is True:
+        return _make_result(TerrainCondition.DIFFICULT, "A.3", 4)
+    if inp.active is True:
+        return _make_result(TerrainCondition.DIFFICULT, "A.3", 5)
+    if inp.liquefiable is True:
+        return _make_result(TerrainCondition.DIFFICULT, "A.3", 2)
+    if inp.sliding_potential is True:
+        return _make_result(TerrainCondition.DIFFICULT, "A.3", 7)
+
+    try:
+        soil_group = SoilGroup(inp.soil_group)
+    except ValueError:
+        return _error(f"Grup de sol necunoscut: {inp.soil_group!r}.")
+
+    if soil_group == SoilGroup.ROCKY:
+        return _classify_rocky(inp)
+    if soil_group == SoilGroup.NON_COHESIVE:
+        return _classify_non_cohesive(inp)
+    if soil_group == SoilGroup.COHESIVE_FINE:
+        return _classify_cohesive_fine(inp)
+    return _classify_fill(inp)
+
+
+def _classify_rocky(inp: TerrainConditionInput) -> TerrainConditionResult:
+    raise NotImplementedError
+
+
+def _classify_non_cohesive(inp: TerrainConditionInput) -> TerrainConditionResult:
+    raise NotImplementedError
+
+
+def _classify_cohesive_fine(inp: TerrainConditionInput) -> TerrainConditionResult:
+    raise NotImplementedError
+
+
+def _classify_fill(inp: TerrainConditionInput) -> TerrainConditionResult:
     raise NotImplementedError

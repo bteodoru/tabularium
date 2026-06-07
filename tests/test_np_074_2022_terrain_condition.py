@@ -5,6 +5,7 @@ from tabularium.np_074_2022.terrain_condition import (
 )
 from tabularium.enums import (
     FillCategory,
+    PlasticityClass,
     RelativeDensity,
     SoilGroup,
     TerrainCondition,
@@ -45,3 +46,72 @@ def test_result_dataclass_defaults():
     assert r.interpolated is False
     assert r.warnings == []
     assert r.errors == []
+
+
+# ── Override flags ─────────────────────────────────────────────────────────────
+
+
+def test_collapsible_true_returns_difficult_a3_row4():
+    inp = TerrainConditionInput(
+        soil_group=SoilGroup.COHESIVE_FINE,
+        plasticity_class=PlasticityClass.LOW,
+        void_ratio=0.6,
+        consistency_index=0.80,
+        collapsible=True,
+    )
+    r = classify_terrain_condition(inp)
+    assert r.valid is True
+    assert r.condition == TerrainCondition.DIFFICULT
+    assert r.matched_table == "A.3"
+    assert r.matched_row == 4
+
+
+def test_active_true_returns_difficult_a3_row5():
+    inp = TerrainConditionInput(
+        soil_group=SoilGroup.COHESIVE_FINE,
+        plasticity_class=PlasticityClass.HIGH,
+        void_ratio=1.0,
+        consistency_index=0.80,
+        active=True,
+    )
+    r = classify_terrain_condition(inp)
+    assert r.valid is True
+    assert r.condition == TerrainCondition.DIFFICULT
+    assert r.matched_table == "A.3"
+    assert r.matched_row == 5
+
+
+def test_liquefiable_true_returns_difficult_a3_row2():
+    inp = TerrainConditionInput(
+        soil_group=SoilGroup.NON_COHESIVE,
+        relative_density=RelativeDensity.DENSE,
+        liquefiable=True,
+    )
+    r = classify_terrain_condition(inp)
+    assert r.valid is True
+    assert r.condition == TerrainCondition.DIFFICULT
+    assert r.matched_table == "A.3"
+    assert r.matched_row == 2
+
+
+def test_sliding_potential_true_returns_difficult_a3_row7():
+    inp = TerrainConditionInput(
+        soil_group=SoilGroup.ROCKY,
+        sliding_potential=True,
+    )
+    r = classify_terrain_condition(inp)
+    assert r.valid is True
+    assert r.condition == TerrainCondition.DIFFICULT
+    assert r.matched_table == "A.3"
+    assert r.matched_row == 7
+
+
+def test_collapsible_false_does_not_override():
+    # collapsible=False → does not trigger override, falls through to normal logic
+    inp = TerrainConditionInput(
+        soil_group=SoilGroup.ROCKY,
+        collapsible=False,
+    )
+    r = classify_terrain_condition(inp)
+    assert r.condition == TerrainCondition.GOOD
+    assert r.matched_table == "A.1"
