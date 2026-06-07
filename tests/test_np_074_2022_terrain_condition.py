@@ -665,3 +665,13 @@ def test_fill_missing_category_returns_error():
     )
     assert r.valid is False
     assert len(r.errors) == 1
+
+
+# ── Registry ──────────────────────────────────────────────────────────────────
+
+def test_registered_in_global_registry():
+    from tabularium.registry import registry
+    entry = registry.get("np_074_2022.terrain_condition")
+    assert entry is not None
+    assert callable(entry.func)
+    assert entry.normative == "NP 074:2022"

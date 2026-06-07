@@ -27,18 +27,13 @@ src/tabularium/
 ├── registry.py          # central index of all available tables
 ├── interpolation.py     # shared interpolation utilities (linear)
 ├── models.py            # shared dataclasses (CodeSource, LookupResult)
-├── np_122_2010/
+├── np_074_2022/
 │   ├── __init__.py
-│   ├── indicative_shear_strength/
-│   │   ├── __init__.py
-│   │   ├── non_cohesive.py                          # Tabelul A.6.1 — φ' pentru pământuri necoezive
-│   │   └── cohesive.py                              # Tabelul A.6.2 — φ', c' pentru pământuri coezive
-│   └── indicative_deformation_modulus/
-│       ├── __init__.py
-│       ├── non_cohesive.py                          # Tabelul A.6.3 — E pentru pământuri nisipoase
-│       └── cohesive.py                              # Tabelul A.6.4 — E pentru pământuri coezive
+│   ├── registry.py
+│   └── terrain_condition.py                         # Tabelele A.1–A.3 — clasificarea condițiilor de teren
 ├── np_112_2014/
 │   ├── __init__.py
+│   ├── registry.py
 │   ├── presumed_bearing_pressure/
 │   │   ├── __init__.py                              # PresumedBearingPressureResult
 │   │   ├── rocks.py                                 # Tabelul D.1 — roci stâncoase și semi-stâncoase
@@ -50,21 +45,33 @@ src/tabularium/
 │   └── allowable_bearing_capacity/
 │       ├── __init__.py                              # WorkingConditionFactorResult
 │       └── working_condition_factor.py              # Tabelul H.7 — coeficientul condițiilor de lucru m₁
+├── np_122_2010/
+│   ├── __init__.py
+│   ├── registry.py
+│   ├── indicative_shear_strength/
+│   │   ├── __init__.py
+│   │   ├── non_cohesive.py                          # Tabelul A.6.1 — φ' pentru pământuri necoezive
+│   │   └── cohesive.py                              # Tabelul A.6.2 — φ', c' pentru pământuri coezive
+│   └── indicative_deformation_modulus/
+│       ├── __init__.py
+│       ├── non_cohesive.py                          # Tabelul A.6.3 — E pentru pământuri nisipoase
+│       └── cohesive.py                              # Tabelul A.6.4 — E pentru pământuri coezive
 tests/
 ├── test_models.py
 ├── test_interpolation.py
-├── test_np_122_2010_indicative_shear_strength_non_cohesive.py
-├── test_np_122_2010_indicative_shear_strength_cohesive.py
-├── test_np_122_2010_indicative_deformation_modulus_non_cohesive.py
-├── test_np_122_2010_indicative_deformation_modulus_cohesive.py
 ├── test_registry.py
+├── test_np_074_2022_terrain_condition.py
 ├── test_np_112_2014_presumed_bearing_pressure_rocks.py
 ├── test_np_112_2014_presumed_bearing_pressure_boulders.py
 ├── test_np_112_2014_presumed_bearing_pressure_gravels.py
 ├── test_np_112_2014_presumed_bearing_pressure_sands.py
 ├── test_np_112_2014_presumed_bearing_pressure_fines.py
 ├── test_np_112_2014_presumed_bearing_pressure_fills.py
-└── test_np_112_2014_allowable_bearing_capacity_working_condition_factor.py
+├── test_np_112_2014_allowable_bearing_capacity_working_condition_factor.py
+├── test_np_122_2010_indicative_shear_strength_non_cohesive.py
+├── test_np_122_2010_indicative_shear_strength_cohesive.py
+├── test_np_122_2010_indicative_deformation_modulus_non_cohesive.py
+└── test_np_122_2010_indicative_deformation_modulus_cohesive.py
 ```
 
 ## Design principles
