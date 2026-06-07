@@ -101,11 +101,33 @@ def classify_terrain_condition(inp: TerrainConditionInput) -> TerrainConditionRe
 
 
 def _classify_rocky(inp: TerrainConditionInput) -> TerrainConditionResult:
-    raise NotImplementedError
+    if not inp.stratification_uniform_horizontal:
+        return _error(
+            "Roci cu stratificație neuniformă nu sunt acoperite de tabelele A.1–A.3."
+        )
+    return _make_result(TerrainCondition.GOOD, "A.1", 6)
 
 
 def _classify_non_cohesive(inp: TerrainConditionInput) -> TerrainConditionResult:
-    raise NotImplementedError
+    if inp.relative_density is None:
+        return _error("relative_density este necesar pentru NON_COHESIVE.")
+
+    try:
+        density = RelativeDensity(inp.relative_density)
+    except ValueError:
+        return _error(f"Densitate relativă necunoscută: {inp.relative_density!r}.")
+
+    if density == RelativeDensity.LOOSE:
+        return _make_result(TerrainCondition.DIFFICULT, "A.3", 1)
+
+    if not inp.stratification_uniform_horizontal:
+        return _error(
+            "Pământuri necoezive dense/medii necesită stratificație uniformă și orizontală conform A.1/A.2."
+        )
+
+    if density == RelativeDensity.DENSE:
+        return _make_result(TerrainCondition.GOOD, "A.1", 2)
+    return _make_result(TerrainCondition.MEDIUM, "A.2", 1)
 
 
 def _classify_cohesive_fine(inp: TerrainConditionInput) -> TerrainConditionResult:

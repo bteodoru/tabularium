@@ -115,3 +115,109 @@ def test_collapsible_false_does_not_override():
     r = classify_terrain_condition(inp)
     assert r.condition == TerrainCondition.GOOD
     assert r.matched_table == "A.1"
+
+
+# ── ROCKY ─────────────────────────────────────────────────────────────────────
+
+def test_rocky_uniform_horizontal_returns_good_a1_row6():
+    r = classify_terrain_condition(
+        TerrainConditionInput(soil_group=SoilGroup.ROCKY)
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.GOOD
+    assert r.matched_table == "A.1"
+    assert r.matched_row == 6
+    assert r.errors == []
+
+
+def test_rocky_non_uniform_returns_error():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.ROCKY,
+            stratification_uniform_horizontal=False,
+        )
+    )
+    assert r.valid is False
+    assert len(r.errors) == 1
+
+
+def test_rocky_source_metadata():
+    r = classify_terrain_condition(
+        TerrainConditionInput(soil_group=SoilGroup.ROCKY)
+    )
+    assert r.source.code == "NP 074:2022"
+    assert r.source.table == "Tabelele A.1–A.3"
+
+
+# ── NON_COHESIVE ──────────────────────────────────────────────────────────────
+
+def test_non_cohesive_dense_uniform_returns_good_a1_row2():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.NON_COHESIVE,
+            relative_density=RelativeDensity.DENSE,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.GOOD
+    assert r.matched_table == "A.1"
+    assert r.matched_row == 2
+
+
+def test_non_cohesive_medium_uniform_returns_medium_a2_row1():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.NON_COHESIVE,
+            relative_density=RelativeDensity.MEDIUM,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.MEDIUM
+    assert r.matched_table == "A.2"
+    assert r.matched_row == 1
+
+
+def test_non_cohesive_loose_returns_difficult_a3_row1():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.NON_COHESIVE,
+            relative_density=RelativeDensity.LOOSE,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.DIFFICULT
+    assert r.matched_table == "A.3"
+    assert r.matched_row == 1
+
+
+def test_non_cohesive_dense_non_uniform_returns_error():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.NON_COHESIVE,
+            relative_density=RelativeDensity.DENSE,
+            stratification_uniform_horizontal=False,
+        )
+    )
+    assert r.valid is False
+    assert len(r.errors) == 1
+
+
+def test_non_cohesive_missing_density_returns_error():
+    r = classify_terrain_condition(
+        TerrainConditionInput(soil_group=SoilGroup.NON_COHESIVE)
+    )
+    assert r.valid is False
+    assert len(r.errors) == 1
+
+
+def test_non_cohesive_loose_ignores_stratification():
+    # LOOSE → DIFFICULT regardless of stratification flag
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.NON_COHESIVE,
+            relative_density=RelativeDensity.LOOSE,
+            stratification_uniform_horizontal=False,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.DIFFICULT
