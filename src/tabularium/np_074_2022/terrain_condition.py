@@ -131,7 +131,59 @@ def _classify_non_cohesive(inp: TerrainConditionInput) -> TerrainConditionResult
 
 
 def _classify_cohesive_fine(inp: TerrainConditionInput) -> TerrainConditionResult:
-    raise NotImplementedError
+    if inp.plasticity_class is None:
+        return _error("plasticity_class este necesar pentru COHESIVE_FINE.")
+    if inp.void_ratio is None:
+        return _error("void_ratio este necesar pentru COHESIVE_FINE.")
+    if inp.consistency_index is None:
+        return _error("consistency_index este necesar pentru COHESIVE_FINE.")
+
+    try:
+        pc = PlasticityClass(inp.plasticity_class)
+    except ValueError:
+        return _error(f"Clasă de plasticitate necunoscută: {inp.plasticity_class!r}.")
+
+    ic = inp.consistency_index
+    e = inp.void_ratio
+    e_max = _E_MAX[pc]
+
+    if ic < 0.5:
+        return _make_result(TerrainCondition.DIFFICULT, "A.3", 3)
+
+    if ic < 0.75:
+        if e > e_max:
+            return _error(
+                f"Combinație e={e}, IC={ic} în afara domeniului tabelelor A.1–A.3 "
+                f"pentru plasticitate {pc!r} (e_max={e_max})."
+            )
+        row = {PlasticityClass.LOW: 2, PlasticityClass.MEDIUM: 3, PlasticityClass.HIGH: 4}[pc]
+        warnings: list[str] = []
+        if inp.active is None and pc in (PlasticityClass.MEDIUM, PlasticityClass.HIGH):
+            warnings.append(
+                "Verificați activitatea conform NP 126 — "
+                "dacă activitate mare/foarte mare → A.3 rând 5 (DIFFICULT)."
+            )
+        return _make_result(TerrainCondition.MEDIUM, "A.2", row, warnings)
+
+    # ic >= 0.75
+    if e > e_max:
+        return _error(
+            f"Combinație e={e}, IC={ic} în afara domeniului tabelelor A.1–A.3 "
+            f"pentru plasticitate {pc!r} (e_max={e_max})."
+        )
+    row = {PlasticityClass.LOW: 3, PlasticityClass.MEDIUM: 4, PlasticityClass.HIGH: 5}[pc]
+    warnings = []
+    if inp.collapsible is None:
+        warnings.append(
+            "Verificați sensibilitatea la umezire conform NP 125 — "
+            "dacă PSU → A.3 rând 4 (DIFFICULT)."
+        )
+    if inp.active is None and pc in (PlasticityClass.MEDIUM, PlasticityClass.HIGH):
+        warnings.append(
+            "Verificați umflările/contracțiile conform NP 126 — "
+            "dacă activitate mare/foarte mare → A.3 rând 5 (DIFFICULT)."
+        )
+    return _make_result(TerrainCondition.GOOD, "A.1", row, warnings)
 
 
 def _classify_fill(inp: TerrainConditionInput) -> TerrainConditionResult:

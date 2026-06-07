@@ -221,3 +221,301 @@ def test_non_cohesive_loose_ignores_stratification():
     )
     assert r.valid is True
     assert r.condition == TerrainCondition.DIFFICULT
+
+
+# ── COHESIVE_FINE ─────────────────────────────────────────────────────────────
+
+# IC < 0.5 → DIFFICULT A.3 row 3
+
+def test_cohesive_fine_ic_below_0_5_returns_difficult_a3_row3():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            plasticity_class=PlasticityClass.MEDIUM,
+            void_ratio=0.8,
+            consistency_index=0.4,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.DIFFICULT
+    assert r.matched_table == "A.3"
+    assert r.matched_row == 3
+
+
+def test_cohesive_fine_ic_exactly_0_5_is_medium():
+    # IC=0.5 is the boundary — belongs to [0.5, 0.75) band → MEDIUM
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            plasticity_class=PlasticityClass.LOW,
+            void_ratio=0.6,
+            consistency_index=0.5,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.MEDIUM
+
+
+# IC ∈ [0.5, 0.75) → MEDIUM A.2 rows 2/3/4
+
+def test_cohesive_fine_low_medium_band_a2_row2():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            plasticity_class=PlasticityClass.LOW,
+            void_ratio=0.6,
+            consistency_index=0.60,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.MEDIUM
+    assert r.matched_table == "A.2"
+    assert r.matched_row == 2
+
+
+def test_cohesive_fine_medium_medium_band_a2_row3():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            plasticity_class=PlasticityClass.MEDIUM,
+            void_ratio=0.8,
+            consistency_index=0.60,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.MEDIUM
+    assert r.matched_table == "A.2"
+    assert r.matched_row == 3
+
+
+def test_cohesive_fine_high_medium_band_a2_row4():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            plasticity_class=PlasticityClass.HIGH,
+            void_ratio=1.0,
+            consistency_index=0.60,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.MEDIUM
+    assert r.matched_table == "A.2"
+    assert r.matched_row == 4
+
+
+# IC ≥ 0.75 → GOOD A.1 rows 3/4/5
+
+def test_cohesive_fine_low_good_band_a1_row3():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            plasticity_class=PlasticityClass.LOW,
+            void_ratio=0.6,
+            consistency_index=0.80,
+            collapsible=False,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.GOOD
+    assert r.matched_table == "A.1"
+    assert r.matched_row == 3
+    assert r.errors == []
+
+
+def test_cohesive_fine_medium_good_band_a1_row4():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            plasticity_class=PlasticityClass.MEDIUM,
+            void_ratio=0.8,
+            consistency_index=0.80,
+            collapsible=False,
+            active=False,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.GOOD
+    assert r.matched_table == "A.1"
+    assert r.matched_row == 4
+    assert r.warnings == []
+
+
+def test_cohesive_fine_high_good_band_a1_row5():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            plasticity_class=PlasticityClass.HIGH,
+            void_ratio=1.0,
+            consistency_index=0.80,
+            collapsible=False,
+            active=False,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.GOOD
+    assert r.matched_table == "A.1"
+    assert r.matched_row == 5
+    assert r.warnings == []
+
+
+# Warnings for NP 125 / NP 126
+
+def test_cohesive_fine_good_band_collapsible_none_emits_np125_warning():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            plasticity_class=PlasticityClass.LOW,
+            void_ratio=0.6,
+            consistency_index=0.80,
+            collapsible=None,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.GOOD
+    assert any("NP 125" in w for w in r.warnings)
+
+
+def test_cohesive_fine_medium_good_band_active_none_emits_np126_warning():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            plasticity_class=PlasticityClass.MEDIUM,
+            void_ratio=0.8,
+            consistency_index=0.80,
+            collapsible=False,
+            active=None,
+        )
+    )
+    assert r.valid is True
+    assert any("NP 126" in w for w in r.warnings)
+
+
+def test_cohesive_fine_low_good_band_active_none_no_np126_warning():
+    # LOW plasticity — NP 126 warning does NOT apply
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            plasticity_class=PlasticityClass.LOW,
+            void_ratio=0.6,
+            consistency_index=0.80,
+            collapsible=False,
+            active=None,
+        )
+    )
+    assert r.valid is True
+    assert not any("NP 126" in w for w in r.warnings)
+
+
+def test_cohesive_fine_active_false_no_np126_warning():
+    # active=False → not active, no warning
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            plasticity_class=PlasticityClass.HIGH,
+            void_ratio=1.0,
+            consistency_index=0.60,
+            active=False,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.MEDIUM
+    assert not any("NP 126" in w for w in r.warnings)
+
+
+def test_cohesive_fine_medium_band_medium_plasticity_active_none_emits_np126_warning():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            plasticity_class=PlasticityClass.MEDIUM,
+            void_ratio=0.8,
+            consistency_index=0.60,
+            active=None,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.MEDIUM
+    assert any("NP 126" in w for w in r.warnings)
+
+
+def test_cohesive_fine_medium_band_low_plasticity_active_none_no_np126_warning():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            plasticity_class=PlasticityClass.LOW,
+            void_ratio=0.6,
+            consistency_index=0.60,
+            active=None,
+        )
+    )
+    assert r.valid is True
+    assert not any("NP 126" in w for w in r.warnings)
+
+
+# Out-of-range e
+
+def test_cohesive_fine_e_exceeds_max_for_low_plasticity_returns_error():
+    # LOW: e_max = 0.7
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            plasticity_class=PlasticityClass.LOW,
+            void_ratio=1.5,
+            consistency_index=0.80,
+        )
+    )
+    assert r.valid is False
+    assert len(r.errors) == 1
+
+
+def test_cohesive_fine_e_at_max_is_valid():
+    # HIGH: e_max=1.1, e=1.1 → valid
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            plasticity_class=PlasticityClass.HIGH,
+            void_ratio=1.1,
+            consistency_index=0.80,
+            collapsible=False,
+            active=False,
+        )
+    )
+    assert r.valid is True
+    assert r.condition == TerrainCondition.GOOD
+
+
+# Missing required fields
+
+def test_cohesive_fine_missing_plasticity_class_returns_error():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            void_ratio=0.6,
+            consistency_index=0.80,
+        )
+    )
+    assert r.valid is False
+    assert len(r.errors) == 1
+
+
+def test_cohesive_fine_missing_consistency_index_returns_error():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            plasticity_class=PlasticityClass.LOW,
+            void_ratio=0.6,
+        )
+    )
+    assert r.valid is False
+    assert len(r.errors) == 1
+
+
+def test_cohesive_fine_missing_void_ratio_returns_error():
+    r = classify_terrain_condition(
+        TerrainConditionInput(
+            soil_group=SoilGroup.COHESIVE_FINE,
+            plasticity_class=PlasticityClass.LOW,
+            consistency_index=0.80,
+        )
+    )
+    assert r.valid is False
+    assert len(r.errors) == 1
