@@ -43,8 +43,9 @@ class Soil(_LabeledEnum):
 
 
 class RelativeDensity(_LabeledEnum):
-    MEDIUM = ("medium", "Medie")   # I_D = 35…65%
-    DENSE  = ("dense",  "Densă")   # I_D > 65%
+    LOOSE  = ("loose",  "Afânată")    # I_D < 35%
+    MEDIUM = ("medium", "Medie")      # I_D = 35…65%
+    DENSE  = ("dense",  "Densă")      # I_D > 65%
 
 
 class MoistureCondition(_LabeledEnum):
@@ -73,3 +74,23 @@ class FillSoilType(_LabeledEnum):
 class SoilCategory(_LabeledEnum):
     COHESIVE     = ("cohesive",     "Coeziv")
     NON_COHESIVE = ("non_cohesive", "Necoeziv")
+
+
+class TerrainCondition(_LabeledEnum):
+    GOOD      = ("good",      "Terenuri bune")
+    MEDIUM    = ("medium",    "Terenuri medii")
+    DIFFICULT = ("difficult", "Terenuri dificile")
+
+
+class SoilGroup(_LabeledEnum):
+    ROCKY         = ("rocky",         "Roci stâncoase și semistâncoase")
+    NON_COHESIVE  = ("non_cohesive",  "Pământuri necoezive (nisipuri, pietrișuri, bolovănișuri)")
+    COHESIVE_FINE = ("cohesive_fine", "Pământuri fine coezive")
+    FILL          = ("fill",          "Umpluturi")
+
+
+class FillCategory(_LabeledEnum):
+    CONTROLLED_COMPACTED   = ("controlled_compacted",   "Umpluturi compactate controlat")
+    KNOWN_ORIGIN_ORGANIZED = ("known_origin_organized", "Umpluturi de proveniență cunoscută, realizate organizat")
+    UNCONTROLLED           = ("uncontrolled",           "Umpluturi executate necontrolat")
+    HOUSEHOLD              = ("household",              "Umpluturi din resturi menajere")
