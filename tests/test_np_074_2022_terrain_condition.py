@@ -1,3 +1,5 @@
+import pytest
+
 from tabularium.np_074_2022.terrain_condition import (
     TerrainConditionInput,
     TerrainConditionResult,
@@ -723,6 +725,7 @@ def test_terrain_table_entry_defaults():
     assert entry.normative_references == ()
 
 
+@pytest.mark.xfail(strict=True, reason="stub — implemented in Task 2")
 def test_get_table_entries_returns_tuple():
     result = get_table_entries()
     assert isinstance(result, tuple)
