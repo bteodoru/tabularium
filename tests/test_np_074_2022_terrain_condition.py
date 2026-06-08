@@ -725,7 +725,90 @@ def test_terrain_table_entry_defaults():
     assert entry.normative_references == ()
 
 
-@pytest.mark.xfail(strict=True, reason="stub — implemented in Task 2")
 def test_get_table_entries_returns_tuple():
     result = get_table_entries()
     assert isinstance(result, tuple)
+
+
+def test_get_table_entries_total_count():
+    assert len(get_table_entries()) == 22
+
+
+def test_get_table_entries_filter_good():
+    entries = get_table_entries(TerrainCondition.GOOD)
+    assert len(entries) == 7
+    assert all(e.condition == TerrainCondition.GOOD for e in entries)
+
+
+def test_get_table_entries_filter_medium():
+    entries = get_table_entries(TerrainCondition.MEDIUM)
+    assert len(entries) == 6
+    assert all(e.condition == TerrainCondition.MEDIUM for e in entries)
+
+
+def test_get_table_entries_filter_difficult():
+    entries = get_table_entries(TerrainCondition.DIFFICULT)
+    assert len(entries) == 9
+    assert all(e.condition == TerrainCondition.DIFFICULT for e in entries)
+
+
+def test_get_table_entries_order():
+    entries = get_table_entries()
+    refs = [(e.table_ref, e.nr_crt) for e in entries]
+    expected = (
+        [("A.1", i) for i in range(1, 8)]
+        + [("A.2", i) for i in range(1, 7)]
+        + [("A.3", i) for i in range(1, 10)]
+    )
+    assert refs == expected
+
+
+def test_get_table_entries_returns_tuple_not_list():
+    assert isinstance(get_table_entries(), tuple)
+    assert isinstance(get_table_entries(TerrainCondition.GOOD), tuple)
+
+
+def test_a1_row3_spot_check():
+    entry = get_table_entries(TerrainCondition.GOOD)[2]  # index 2 = nr_crt 3
+    assert entry.nr_crt == 3
+    assert entry.table_ref == "A.1"
+    assert entry.soil_group == SoilGroup.COHESIVE_FINE
+    assert entry.plasticity_class == PlasticityClass.LOW
+    assert entry.ic_min == 0.75
+    assert entry.ic_max is None
+    assert entry.e_max == 0.7
+    assert entry.requires_uniform_stratification is True
+    assert entry.normative_references == ("NP 125",)
+    assert "Nisipuri argiloase" in entry.soil_types
+
+
+def test_a2_row6_spot_check():
+    entry = get_table_entries(TerrainCondition.MEDIUM)[5]  # index 5 = nr_crt 6
+    assert entry.nr_crt == 6
+    assert entry.table_ref == "A.2"
+    assert entry.fill_category == FillCategory.KNOWN_ORIGIN_ORGANIZED
+    assert entry.organic_content_max == 5.0
+    assert entry.fill_age_min_years == 10.0
+    assert entry.requires_uniform_stratification is False
+
+
+def test_a3_row2_spot_check():
+    entry = get_table_entries(TerrainCondition.DIFFICULT)[1]  # index 1 = nr_crt 2
+    assert entry.nr_crt == 2
+    assert entry.table_ref == "A.3"
+    assert entry.soil_group == SoilGroup.NON_COHESIVE
+    assert entry.relative_density is None
+    assert entry.requires_uniform_stratification is False
+    assert entry.normative_references == ()
+
+
+def test_a1_row7_no_uniform_stratification():
+    entry = get_table_entries(TerrainCondition.GOOD)[6]  # index 6 = nr_crt 7
+    assert entry.fill_category == FillCategory.CONTROLLED_COMPACTED
+    assert entry.requires_uniform_stratification is False
+
+
+def test_a3_row3_ic_max():
+    entry = get_table_entries(TerrainCondition.DIFFICULT)[2]  # nr_crt 3
+    assert entry.ic_max == 0.5
+    assert entry.ic_min is None

@@ -76,11 +76,304 @@ class TerrainTableEntry:
     normative_references: tuple[str, ...] = ()
 
 
+_TABLE_ENTRIES: tuple[TerrainTableEntry, ...] = (
+    # ── Tabelul A.1 — Condiții de terenuri bune ───────────────────────────────
+    TerrainTableEntry(
+        nr_crt=1,
+        table_ref="A.1",
+        condition=TerrainCondition.GOOD,
+        description=(
+            "Blocuri, bolovănișuri și pietrișuri, conținând mai puțin de 40% nisip "
+            "și mai puțin de 30% argilă, în condițiile unei stratificații practic "
+            "uniforme și orizontale (având înclinarea mai mică de 10%)"
+        ),
+        soil_types=("Blocuri", "Bolovănișuri", "Pietrișuri"),
+        soil_group=SoilGroup.NON_COHESIVE,
+        requires_uniform_stratification=True,
+    ),
+    TerrainTableEntry(
+        nr_crt=2,
+        table_ref="A.1",
+        condition=TerrainCondition.GOOD,
+        description=(
+            "Pământuri nisipoase, inclusiv nisipuri prăfoase, îndesate, în condițiile "
+            "unei stratificații practic uniforme și orizontale"
+        ),
+        soil_types=("Nisipuri", "Nisipuri prăfoase"),
+        soil_group=SoilGroup.NON_COHESIVE,
+        relative_density=RelativeDensity.DENSE,
+        requires_uniform_stratification=True,
+    ),
+    TerrainTableEntry(
+        nr_crt=3,
+        table_ref="A.1",
+        condition=TerrainCondition.GOOD,
+        description=(
+            "Pământuri fine cu IP<10%: nisipuri argiloase, prafuri nisipoase și prafuri, "
+            "având e<0.7 și IC≥0.75, în condițiile unei stratificații practic uniforme "
+            "și orizontale"
+        ),
+        soil_types=("Nisipuri argiloase", "Prafuri nisipoase", "Prafuri"),
+        soil_group=SoilGroup.COHESIVE_FINE,
+        plasticity_class=PlasticityClass.LOW,
+        ic_min=0.75,
+        e_max=0.7,
+        requires_uniform_stratification=True,
+        normative_references=("NP 125",),
+    ),
+    TerrainTableEntry(
+        nr_crt=4,
+        table_ref="A.1",
+        condition=TerrainCondition.GOOD,
+        description=(
+            "Pământuri fine cu 10%<IP<20%: nisipuri argiloase, prafuri nisipoase-argiloase, "
+            "având e<1.0 și IC≥0.75, în condițiile unei stratificații practic uniforme "
+            "și orizontale"
+        ),
+        soil_types=("Nisipuri argiloase", "Prafuri nisipoase-argiloase"),
+        soil_group=SoilGroup.COHESIVE_FINE,
+        plasticity_class=PlasticityClass.MEDIUM,
+        ic_min=0.75,
+        e_max=1.0,
+        requires_uniform_stratification=True,
+        normative_references=("NP 125", "NP 126"),
+    ),
+    TerrainTableEntry(
+        nr_crt=5,
+        table_ref="A.1",
+        condition=TerrainCondition.GOOD,
+        description=(
+            "Pământuri fine cu IP>20%: argile nisipoase, argile prăfoase și argile, "
+            "având e<1.1 și IC≥0.75, în condițiile unei stratificații practic uniforme "
+            "și orizontale"
+        ),
+        soil_types=("Argile nisipoase", "Argile prăfoase", "Argile"),
+        soil_group=SoilGroup.COHESIVE_FINE,
+        plasticity_class=PlasticityClass.HIGH,
+        ic_min=0.75,
+        e_max=1.1,
+        requires_uniform_stratification=True,
+        normative_references=("NP 125", "NP 126"),
+    ),
+    TerrainTableEntry(
+        nr_crt=6,
+        table_ref="A.1",
+        condition=TerrainCondition.GOOD,
+        description=(
+            "Roci stâncoase și semistâncoase în condițiile unei stratificații practic "
+            "uniforme și orizontale"
+        ),
+        soil_types=("Roci stâncoase", "Roci semistâncoase"),
+        soil_group=SoilGroup.ROCKY,
+        requires_uniform_stratification=True,
+    ),
+    TerrainTableEntry(
+        nr_crt=7,
+        table_ref="A.1",
+        condition=TerrainCondition.GOOD,
+        description=(
+            "Umpluturi compactate realizate conform unor documentații de execuție "
+            "(caiete de sarcini) controlate calitativ de unități autorizate"
+        ),
+        soil_group=SoilGroup.FILL,
+        fill_category=FillCategory.CONTROLLED_COMPACTED,
+        requires_uniform_stratification=False,
+    ),
+    # ── Tabelul A.2 — Condiții de terenuri medii ──────────────────────────────
+    TerrainTableEntry(
+        nr_crt=1,
+        table_ref="A.2",
+        condition=TerrainCondition.MEDIUM,
+        description=(
+            "Pământuri nisipoase, inclusiv nisipuri prăfoase, de îndesare medie, "
+            "în condițiile unei stratificații practic uniforme și orizontale "
+            "(având înclinarea mai mică de 10%)"
+        ),
+        soil_types=("Nisipuri", "Nisipuri prăfoase"),
+        soil_group=SoilGroup.NON_COHESIVE,
+        relative_density=RelativeDensity.MEDIUM,
+        requires_uniform_stratification=True,
+    ),
+    TerrainTableEntry(
+        nr_crt=2,
+        table_ref="A.2",
+        condition=TerrainCondition.MEDIUM,
+        description=(
+            "Pământuri fine cu IP<10%: nisipuri argiloase, prafuri nisipoase și prafuri, "
+            "având e<0.7 și 0.5<IC<0.75, în condițiile unei stratificații practic "
+            "uniforme și orizontale"
+        ),
+        soil_types=("Nisipuri argiloase", "Prafuri nisipoase", "Prafuri"),
+        soil_group=SoilGroup.COHESIVE_FINE,
+        plasticity_class=PlasticityClass.LOW,
+        ic_min=0.5,
+        ic_max=0.75,
+        e_max=0.7,
+        requires_uniform_stratification=True,
+    ),
+    TerrainTableEntry(
+        nr_crt=3,
+        table_ref="A.2",
+        condition=TerrainCondition.MEDIUM,
+        description=(
+            "Pământuri fine cu 10%<IP<20%: nisipuri argiloase, prafuri nisipoase-argiloase, "
+            "având e<1.0 și 0.5<IC<0.75, în condițiile unei stratificații practic "
+            "uniforme și orizontale"
+        ),
+        soil_types=("Nisipuri argiloase", "Prafuri nisipoase-argiloase"),
+        soil_group=SoilGroup.COHESIVE_FINE,
+        plasticity_class=PlasticityClass.MEDIUM,
+        ic_min=0.5,
+        ic_max=0.75,
+        e_max=1.0,
+        requires_uniform_stratification=True,
+    ),
+    TerrainTableEntry(
+        nr_crt=4,
+        table_ref="A.2",
+        condition=TerrainCondition.MEDIUM,
+        description=(
+            "Pământuri fine cu IP>20%: argile nisipoase, argile prăfoase și argile, "
+            "având e<1.1 și 0.5<IC<0.75, în condițiile unei stratificații practic "
+            "uniforme și orizontale"
+        ),
+        soil_types=("Argile nisipoase", "Argile prăfoase", "Argile"),
+        soil_group=SoilGroup.COHESIVE_FINE,
+        plasticity_class=PlasticityClass.HIGH,
+        ic_min=0.5,
+        ic_max=0.75,
+        e_max=1.1,
+        requires_uniform_stratification=True,
+    ),
+    TerrainTableEntry(
+        nr_crt=5,
+        table_ref="A.2",
+        condition=TerrainCondition.MEDIUM,
+        description=(
+            "Pământuri argiloase puțin active sau cu activitate medie, "
+            "definite conform normativului NP 126"
+        ),
+        soil_types=("Pământuri argiloase",),
+        soil_group=SoilGroup.COHESIVE_FINE,
+        requires_uniform_stratification=False,
+        normative_references=("NP 126",),
+    ),
+    TerrainTableEntry(
+        nr_crt=6,
+        table_ref="A.2",
+        condition=TerrainCondition.MEDIUM,
+        description=(
+            "Umpluturi de proveniență cunoscută realizate organizat și conținând "
+            "materii organice sub 5% sau umpluturi necompactate inițial, "
+            "cu o vechime mai mare de 10-12 ani"
+        ),
+        soil_group=SoilGroup.FILL,
+        fill_category=FillCategory.KNOWN_ORIGIN_ORGANIZED,
+        organic_content_max=5.0,
+        fill_age_min_years=10.0,
+        requires_uniform_stratification=False,
+    ),
+    # ── Tabelul A.3 — Condiții de terenuri dificile ───────────────────────────
+    TerrainTableEntry(
+        nr_crt=1,
+        table_ref="A.3",
+        condition=TerrainCondition.DIFFICULT,
+        description="Pământuri nisipoase, inclusiv nisipuri prăfoase, în stare afânată",
+        soil_types=("Nisipuri", "Nisipuri prăfoase"),
+        soil_group=SoilGroup.NON_COHESIVE,
+        relative_density=RelativeDensity.LOOSE,
+        requires_uniform_stratification=False,
+    ),
+    TerrainTableEntry(
+        nr_crt=2,
+        table_ref="A.3",
+        condition=TerrainCondition.DIFFICULT,
+        description=(
+            "Pământuri nisipoase saturate susceptibile de lichefiere "
+            "sub acțiuni seismice"
+        ),
+        soil_types=("Nisipuri", "Nisipuri prăfoase"),
+        soil_group=SoilGroup.NON_COHESIVE,
+        requires_uniform_stratification=False,
+    ),
+    TerrainTableEntry(
+        nr_crt=3,
+        table_ref="A.3",
+        condition=TerrainCondition.DIFFICULT,
+        description="Pământuri fine având IC<0.5",
+        soil_group=SoilGroup.COHESIVE_FINE,
+        ic_max=0.5,
+        requires_uniform_stratification=False,
+    ),
+    TerrainTableEntry(
+        nr_crt=4,
+        table_ref="A.3",
+        condition=TerrainCondition.DIFFICULT,
+        description=(
+            "Pământuri sensibile la umezire, definite conform normativului NP 125"
+        ),
+        soil_group=SoilGroup.COHESIVE_FINE,
+        requires_uniform_stratification=False,
+        normative_references=("NP 125",),
+    ),
+    TerrainTableEntry(
+        nr_crt=5,
+        table_ref="A.3",
+        condition=TerrainCondition.DIFFICULT,
+        description=(
+            "Pământuri cu umflări și contracții mari, cu activitate mare și foarte mare, "
+            "definite conform normativului NP 126"
+        ),
+        soil_group=SoilGroup.COHESIVE_FINE,
+        requires_uniform_stratification=False,
+        normative_references=("NP 126",),
+    ),
+    TerrainTableEntry(
+        nr_crt=6,
+        table_ref="A.3",
+        condition=TerrainCondition.DIFFICULT,
+        description="Pământuri cu conținut ridicat de materii organice (peste 5%)",
+        organic_content_min=5.0,
+        requires_uniform_stratification=False,
+    ),
+    TerrainTableEntry(
+        nr_crt=7,
+        table_ref="A.3",
+        condition=TerrainCondition.DIFFICULT,
+        description="Terenuri în pantă cu potențial de alunecare",
+        requires_uniform_stratification=False,
+    ),
+    TerrainTableEntry(
+        nr_crt=8,
+        table_ref="A.3",
+        condition=TerrainCondition.DIFFICULT,
+        description=(
+            "Umpluturi din pământ executate necontrolat cu o vechime sub 10 ani"
+        ),
+        soil_group=SoilGroup.FILL,
+        fill_category=FillCategory.UNCONTROLLED,
+        fill_age_max_years=10.0,
+        requires_uniform_stratification=False,
+    ),
+    TerrainTableEntry(
+        nr_crt=9,
+        table_ref="A.3",
+        condition=TerrainCondition.DIFFICULT,
+        description="Umpluturi din resturi menajere, indiferent de vechime",
+        soil_group=SoilGroup.FILL,
+        fill_category=FillCategory.HOUSEHOLD,
+        requires_uniform_stratification=False,
+    ),
+)
+
+
 def get_table_entries(
     condition: TerrainCondition | None = None,
 ) -> tuple[TerrainTableEntry, ...]:
     """Returnează rândurile din Tabelele A.1–A.3, opțional filtrate după condiție."""
-    raise NotImplementedError
+    if condition is None:
+        return _TABLE_ENTRIES
+    return tuple(e for e in _TABLE_ENTRIES if e.condition == condition)
 
 
 def _make_result(
