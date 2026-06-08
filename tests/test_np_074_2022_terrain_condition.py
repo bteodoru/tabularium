@@ -675,3 +675,54 @@ def test_registered_in_global_registry():
     assert entry is not None
     assert callable(entry.func)
     assert entry.normative == "NP 074:2022"
+
+
+# ── get_table_entries ─────────────────────────────────────────────────────────
+
+from tabularium.np_074_2022.terrain_condition import (
+    TerrainTableEntry,
+    get_table_entries,
+)
+
+
+def test_terrain_table_entry_is_frozen():
+    from dataclasses import FrozenInstanceError
+    entry = TerrainTableEntry(
+        nr_crt=1,
+        table_ref="A.1",
+        condition=TerrainCondition.GOOD,
+        description="Test",
+    )
+    try:
+        entry.nr_crt = 99  # type: ignore[misc]
+        assert False, "Should have raised FrozenInstanceError"
+    except FrozenInstanceError:
+        pass
+
+
+def test_terrain_table_entry_defaults():
+    entry = TerrainTableEntry(
+        nr_crt=1,
+        table_ref="A.1",
+        condition=TerrainCondition.GOOD,
+        description="Test",
+    )
+    assert entry.soil_types == ()
+    assert entry.soil_group is None
+    assert entry.relative_density is None
+    assert entry.plasticity_class is None
+    assert entry.ic_min is None
+    assert entry.ic_max is None
+    assert entry.e_max is None
+    assert entry.fill_category is None
+    assert entry.organic_content_max is None
+    assert entry.organic_content_min is None
+    assert entry.fill_age_min_years is None
+    assert entry.fill_age_max_years is None
+    assert entry.requires_uniform_stratification is True
+    assert entry.normative_references == ()
+
+
+def test_get_table_entries_returns_tuple():
+    result = get_table_entries()
+    assert isinstance(result, tuple)

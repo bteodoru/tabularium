@@ -54,6 +54,35 @@ class TerrainConditionResult(LookupResult):
     matched_row: int | None = None
 
 
+@dataclass(frozen=True)
+class TerrainTableEntry:
+    nr_crt: int
+    table_ref: str
+    condition: TerrainCondition
+    description: str
+    soil_types: tuple[str, ...] = ()
+    soil_group: SoilGroup | None = None
+    relative_density: RelativeDensity | None = None
+    plasticity_class: PlasticityClass | None = None
+    ic_min: float | None = None
+    ic_max: float | None = None
+    e_max: float | None = None
+    fill_category: FillCategory | None = None
+    organic_content_max: float | None = None
+    organic_content_min: float | None = None
+    fill_age_min_years: float | None = None
+    fill_age_max_years: float | None = None
+    requires_uniform_stratification: bool = True
+    normative_references: tuple[str, ...] = ()
+
+
+def get_table_entries(
+    condition: TerrainCondition | None = None,
+) -> tuple[TerrainTableEntry, ...]:
+    """Returnează rândurile din Tabelele A.1–A.3, opțional filtrate după condiție."""
+    raise NotImplementedError
+
+
 def _make_result(
     condition: TerrainCondition,
     table: str,
